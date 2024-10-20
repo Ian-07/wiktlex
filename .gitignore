@@ -1,0 +1,6 @@
+*.txt
+!LICENSE.txt
+*.jsonl
+.idea*
+__pycache__*
+test.py

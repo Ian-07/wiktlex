@@ -1,0 +1,80 @@
+.button {
+    cursor: pointer;
+}
+
+.not-button {
+    cursor: not-allowed;
+}
+
+.button, .not-button {
+    width: 18px;
+}
+
+.accepted {
+    background-color: #00ff00;
+}
+
+.rejected {
+    background-color: #ff8080;
+}
+
+.unsure {
+    background-color: #ffff00;
+}
+
+.pending {
+    background-color: #80c0ff;
+}
+
+.redundant {
+    background-color: #c0c0c0;
+}
+
+.selected {
+    outline: 3px solid black;
+}
+
+.accepted.selected {
+    background-color: #008000;
+}
+
+.rejected.selected {
+    background-color: #ff0000;
+}
+
+.unsure.selected {
+    background-color: #808000;
+}
+
+.pending.selected {
+    background-color: #0000ff;
+}
+
+.redundant.selected {
+    background-color: #808080;
+}
+
+.redundant-definition {
+    color: #c0c0c0;
+    text-decoration: line-through;
+}
+
+.misspelling {
+    background-color: #ffff00;
+}
+
+.abbreviation {
+    background-color: #80c0ff;
+}
+
+.proper-noun {
+    background-color: #c080ff;
+}
+
+.autogen {
+    background-color: #c0c0c0;
+}
+
+.offensive {
+    background-color: #ff8080;
+}

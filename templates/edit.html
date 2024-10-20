@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Editor</title>
+</head>
+<body>
+    <link href="../static/style.css" rel="stylesheet" />
+    <p><a href="{{ url_for('home') }}">Back</a></p>
+    {% if total_matches > 0 %}<p>Showing {{ "{:,}".format(offset+1) }}-{{ "{:,}".format(min(offset+n, total_matches)) }} of {{ "{:,}".format(total_matches) }} result{% if total_matches > 1 %}s{% endif %} {% if offset > 0 %}(<a href="{{ args_str.replace('offset=%d' % offset, 'offset=%d' % (max(offset-n, 0))) }}">previous</a>){% endif %} {% if offset+n < total_matches %}(<a href="{{ args_str.replace('offset=%d' % offset, 'offset=%d' % (offset+n)) }}">next</a>){% endif %}</p>{% endif %}
+    <form action="{{ url_for('edit') }}{{ args_str }}" method="post">
+        <table>
+            {% for word in words %}
+            <tr>
+                <th colspan="7" style="text-align:center;">{{ word }}</th>
+            </tr>
+            {% for sense in words[word] %}
+            {% set status = get_status(word, sense) %}
+            {% set def = sense['def'].lower() %}
+            <tr class="sense {{ word }}" id="{{ sense['md5'] }}" forms="{{ list_forms(sense) }}">
+                <input id="form-{{ sense['md5'] }}" type="hidden" name="{{ word }} {{ sense['md5'] }}" value="{{ '.' if status == '/' else status }}"/>
+                <td>{{ sense["word"] }}</td>
+                <td id="accepted-{{ sense['md5'] }}" class="button accepted{% if status == '+' %} selected{% endif %}"></td>
+                <td id="rejected-{{ sense['md5'] }}" class="button rejected{% if status == '-' %} selected{% endif %}"></td>
+                <td id="unsure-{{ sense['md5'] }}" class="button unsure{% if status == '?' %} selected{% endif %}"></td>
+                <td id="pending-{{ sense['md5'] }}" class="button pending{% if status == '.' %} selected{% endif %}"></td>
+                <td id="redundant-{{ sense['md5'] }}" class="not-button redundant{% if status == '/' %} selected{% endif %}"></td>
+                <td id="def-{{ sense['md5'] }}" class="{% if sense in redundant_senses[word] %}redundant-definition{% endif %} {% if 'misspelling' in def or 'eggcorn' in def %}misspelling{% endif %} {% if 'abbreviation' in def or 'acronym' in def or 'initialism' in def %}abbreviation{% endif %} {% if sense['pos'] == 'name' %}proper-noun{% endif %} {% if 'AUTOGEN' in sense['tags'] %}autogen{% endif %} {% if 'derogatory' in sense['tags'] or 'offensive' in sense['tags'] or 'slur' in sense['tags'] %}offensive{% endif %}">{{ sense["def"] }}</td>
+            </tr>
+            {% endfor %}
+            {% endfor %}
+        </table>
+        <input id="submit" type="submit" value="Save Changes">
+    </form>
+    <script>
+        let unsavedChanges = false;
+
+        const possibleStatuses = ["accepted", "rejected", "unsure", "pending", "redundant"];
+
+        const statusSymbols = {
+            "accepted": "+",
+            "rejected": "-",
+            "unsure": "?",
+            "pending": ".",
+            "redundant": "/"
+        };
+
+        const words = {};
+        const statuses = {};
+
+        const senses = document.getElementsByClassName("sense");
+
+        for (let i = 0; i < senses.length; i++) {
+            let id = senses[i].id;
+            let word = senses[i].classList[1];
+
+            if (!words[word]) {
+                words[word] = [];
+            }
+
+            words[word].push(id);
+
+            let childNodes = document.getElementById(id).childNodes;
+
+            for (let j = 0; j < childNodes.length; j++) {
+                let node = childNodes[j]
+
+                if (node.tagName) {
+                    if (node.classList.contains("button")) {
+                        node.addEventListener("click", function() {
+                            unsavedChanges = true;
+
+                            symbol = statusSymbols[node.classList[1]];
+                            statuses[id] = symbol;
+                            document.getElementById("form-" + id).value = symbol;
+
+                            acceptedForms = {};
+
+                            for (let k = 0; k < words[word].length; k++) {
+                                let otherID = words[word][k];
+
+                                if (statuses[otherID] == "+") {
+                                    let otherForms = document.getElementById(otherID).getAttribute("forms").split(",");
+
+                                    for (let l = 0; l < otherForms.length; l++) {
+                                        acceptedForms[otherForms[l]] = true;
+                                    }
+                                }
+                            }
+
+                            for (let k = 0; k < words[word].length; k++) {
+                                let otherID = words[word][k];
+
+                                if (statuses[otherID] == "." || statuses[otherID] == "/") {
+                                    let otherForms = document.getElementById(otherID).getAttribute("forms").split(",");
+                                    let redundant = true;
+
+                                    for (let l = 0; l < otherForms.length; l++) {
+                                        if (!acceptedForms[otherForms[l]]) {
+                                            redundant = false;
+                                        }
+                                    }
+
+                                    if (redundant) {
+                                        statuses[otherID] = "/";
+                                    } else {
+                                        statuses[otherID] = ".";
+                                    }
+
+                                    document.getElementById("form-" + otherID).value = ".";
+                                }
+
+                                let definition = document.getElementById("def-" + otherID);
+
+                                for (let l = 0; l < possibleStatuses.length; l++) {
+                                    let button = document.getElementById(possibleStatuses[l] + "-" + otherID);
+
+                                    if (statuses[otherID] == statusSymbols[possibleStatuses[l]]) {
+                                        button.classList.add("selected");
+
+                                        if (possibleStatuses[l] == "redundant") {
+                                            definition.classList.add("redundant-definition");
+                                        }
+                                    } else {
+                                        button.classList.remove("selected");
+
+                                        if (possibleStatuses[l] == "redundant") {
+                                            definition.classList.remove("redundant-definition");
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    }
+
+                    if (node.classList.contains("selected")) {
+                        statuses[id] = statusSymbols[node.classList[1]];
+                    }
+                }
+            }
+        }
+
+        document.getElementById("submit").addEventListener("click", function() {
+            unsavedChanges = false;
+        });
+
+        window.addEventListener("beforeunload", function(e) {
+            if (unsavedChanges) {
+                e.preventDefault();
+                e.returnValue = "";
+            }
+        });
+    </script>
+</body>
+</html>

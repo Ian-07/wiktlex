@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Home</title>
+</head>
+<body>
+    <link href="../static/style.css" rel="stylesheet" />
+    <form action="{{ url_for('home') }}" method="post">
+        <table>
+            <tr>
+                <td><label for="word">Word:</label></td>
+                <td><input type="text" name="word"/></td>
+            </tr>
+            <tr>
+                <td colspan="2" style="text-align:center;">(overrides all other parameters)</td>
+            </tr>
+            <tr>
+                <td colspan="2" style="text-align:center;">OR</td>
+            </tr>
+            <tr>
+                <td><label for="minlength">Minimum length:</label></td>
+                <td><input type="number" name="minlength" value="{{ min_headword_length }}" min="{{ min_headword_length }}" max="{{ max_headword_length }}"/></td>
+            </tr>
+            <tr>
+                <td><label for="maxlength">Maximum length:</label></td>
+                <td><input type="number" name="maxlength" value="{{ max_headword_length }}" min="{{ min_headword_length }}" max="{{ max_headword_length }}"/></td>
+            </tr>
+            <tr>
+                <td><label for="pos"><abbr title="{{ ", ".join(pos) }}">Part of speech:</abbr></label></td>
+                <td><input type="text" name="pos"/></td>
+            </tr>
+            <tr>
+                <td><label for="tag">Tag:</label></td>
+                <td><input type="text" name="tag"/></td>
+            </tr>
+            <tr>
+                <td><label for="wordregex">Headword regex:</label></td>
+                <td><input type="text" name="wordregex"/></td>
+            </tr>
+            <tr>
+                <td><label for="defregex">Definition regex:</label></td>
+                <td><input type="text" name="defregex"/></td>
+            </tr>
+            <tr>
+                <td><label for="family">Family-friendly mode:</label></td>
+                <td><input type="checkbox" name="family" checked/></td>
+            </tr>
+            <tr>
+                <td><label for="unsure">Include unsure:</label></td>
+                <td><input type="checkbox" name="unsure"/></td>
+            </tr>
+            <tr>
+                <td><label for="accepted">Include accepted:</label></td>
+                <td><input type="checkbox" name="accepted"/></td>
+            </tr>
+            <tr>
+                <td><label for="rejected">Include rejected:</label></td>
+                <td><input type="checkbox" name="rejected"/></td>
+            </tr>
+            <tr>
+                <td><label for="n">Results (max {{ "{:,}".format(max_n) }}):</label></td>
+                <td><input type="number" name="n" value="1000" min="0" max="{{ max_n }}"/></td>
+            </tr>
+            <input type="hidden" name="offset" value="0">
+            <tr>
+                <td><label for="sortbylength">Sort by length:</label></td>
+                <td><input type="checkbox" name="sortbylength" checked/></td>
+            </tr>
+        </table>
+        <input type="submit">
+    </form>
+    <p><a href="{{ url_for('stats') }}">View stats</a><p>
+    <p>Color guide:</p>
+    <table>
+        <tr>
+            <th>Statuses:</th>
+            <td class="accepted">Accepted</td>
+            <td class="rejected">Rejected</td>
+            <td class="unsure">Unsure</td>
+            <td class="pending">Pending</td>
+            <td class="redundant">Redundant</td>
+        </tr>
+        <tr>
+            <th>Definitions:</th>
+            <td class="misspelling">Misspelling</td>
+            <td class="abbreviation">Abbreviation</td>
+            <td class="proper-noun">Proper noun</td>
+            <td class="autogen">Auto-generated</td>
+            <td class="offensive">Potentially offensive</td>
+        </tr>
+    </table>
+</body>
+</html>
