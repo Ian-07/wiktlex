@@ -168,6 +168,9 @@ for entry in entries:
                         for form in entry["forms"]:
                             sense_data["forms"].append(form["form"])
 
+                    if "qualifier" in sense.keys():
+                        sense_data["tags"].append(sense["qualifier"])
+
                     if "tags" in sense.keys():
                         sense_data["tags"] += sense["tags"]
 
