@@ -34,6 +34,8 @@ for line in raw:
 print("Done. %d lines parsed." % n)
 
 if run_bonus_scripts:
+    print("BONUS: initiating bonus scripts...")
+
     entry_words = {}
 
     for entry in entries:
