@@ -12,7 +12,7 @@
         <table>
             {% for word in words %}
             <tr>
-                <th colspan="7" style="text-align:center;">{{ word }}  <button id="rejectall-{{ word }}" type="button">Reject all pending</button> </th>
+                <th colspan="7" style="text-align:center;">{{ word }} <button id="rejectall-{{ word }}" type="button">Reject all pending</button> <button id="reset-{{ word }}" type="button">Reset all</button></th>
             </tr>
             {% for sense in words[word] %}
             {% set status = get_status(word, sense) %}
@@ -156,6 +156,7 @@
         for (let i = 0; i < wordsArray.length; i++) {
             let word = wordsArray[i];
             let rejectButton = document.getElementById("rejectall-" + word);
+            let resetButton = document.getElementById("reset-" + word);
 
             rejectButton.addEventListener("click", function() {
                 for (let j = 0; j < words[word].length; j++) {
@@ -164,6 +165,13 @@
                     if (statuses[otherID] == ".") {
                         document.getElementById("rejected-" + otherID).click();
                     }
+                }
+            });
+
+            resetButton.addEventListener("click", function() {
+                for (let j = 0; j < words[word].length; j++) {
+                    let otherID = words[word][j];
+                    document.getElementById("pending-" + otherID).click();
                 }
             });
         }
