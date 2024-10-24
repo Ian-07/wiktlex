@@ -12,7 +12,7 @@
         <table>
             {% for word in words %}
             <tr>
-                <th colspan="7" style="text-align:center;">{{ word }}</th>
+                <th colspan="7" style="text-align:center;">{{ word }}  <button id="rejectall-{{ word }}" type="button">Reject all pending</button> </th>
             </tr>
             {% for sense in words[word] %}
             {% set status = get_status(word, sense) %}
@@ -150,6 +150,23 @@
                 e.returnValue = "";
             }
         });
+
+        const wordsArray = Object.keys(words);
+
+        for (let i = 0; i < wordsArray.length; i++) {
+            let word = wordsArray[i];
+            let rejectButton = document.getElementById("rejectall-" + word);
+
+            rejectButton.addEventListener("click", function() {
+                for (let j = 0; j < words[word].length; j++) {
+                    let otherID = words[word][j];
+
+                    if (statuses[otherID] == ".") {
+                        document.getElementById("rejected-" + otherID).click();
+                    }
+                }
+            });
+        }
     </script>
 </body>
 </html>
