@@ -344,7 +344,7 @@ for headword in headwords:
                     s = headword[:-1] + "IES"
                     ing = headword + "ING"
                     ed = headword[:-1] + "IED"
-                elif word[-1] == "E":
+                elif headword[-1] == "E":
                     ed = headword + "D"
                     s = headword + "S"
 
