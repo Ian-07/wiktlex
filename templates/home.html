@@ -6,7 +6,7 @@
 </head>
 <body>
     <link href="../static/style.css" rel="stylesheet" />
-    <form action="{{ url_for('home') }}" method="post">
+    <form action="{{ url_for('home') }}" method="post" enctype="multipart/form-data">
         <table>
             <tr>
                 <td><label for="word">Word:</label></td>
@@ -17,6 +17,10 @@
             </tr>
             <tr>
                 <td colspan="2" style="text-align:center;">OR</td>
+            </tr>
+            <tr>
+                <td><label for="wordlist">In list (one word per line):</label></td>
+                <td><input type="file" name="wordlist"></td>
             </tr>
             <tr>
                 <td><label for="minlength">Minimum length:</label></td>

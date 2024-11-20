@@ -7,6 +7,7 @@
 <body>
     <link href="../static/style.css" rel="stylesheet" />
     <p><a href="{{ url_for('home') }}">Back</a></p>
+    {% if msg != "" %}<p>{{ msg }}</p>{% endif %}
     {% if total_matches > 0 %}<p>Showing {{ "{:,}".format(offset+1) }}-{{ "{:,}".format(min(offset+n, total_matches)) }} of {{ "{:,}".format(total_matches) }} result{% if total_matches > 1 %}s{% endif %} {% if offset > 0 %}(<a href="{{ args_str.replace('offset=%d' % offset, 'offset=%d' % (max(offset-n, 0))) }}">previous</a>){% endif %} {% if offset+n < total_matches %}(<a href="{{ args_str.replace('offset=%d' % offset, 'offset=%d' % (offset+n)) }}">next</a>){% endif %}</p>{% endif %}
     <form action="{{ url_for('edit') }}{{ args_str }}" method="post">
         <table>
@@ -30,7 +31,7 @@
             {% endfor %}
             {% endfor %}
         </table>
-        <input id="submit" type="submit" value="Save Changes">
+        {% if msg == "" %}<input id="submit" type="submit" value="Save Changes">{% endif %}
     </form>
     <script>
         let unsavedChanges = false;

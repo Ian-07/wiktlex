@@ -1,9 +1,11 @@
 from flask import Flask, render_template, request, redirect, url_for
+import hashlib
 import json
 import re
 from unidecode import unidecode
 
 max_n = 1000
+uploaded_wordlists = {}
 
 print("Reading headwords.txt...")
 
@@ -101,6 +103,20 @@ def home():
     if request.method == "POST":
         params = []
 
+        if request.files["wordlist"].filename != '':
+            raw_wordlist = str(request.files["wordlist"].read())[2:-1]
+            wordlist = set()
+
+            for line in raw_wordlist.split("\\r\\n"):
+                word = unidecode(line.split(" ")[0]).upper()
+
+                if len(word) >= 0 and word.isupper() and word not in wordlist:
+                    wordlist.add(word)
+
+            digest = hashlib.md5(str(wordlist).encode("UTF-8")).hexdigest()
+            uploaded_wordlists[digest] = wordlist
+            params.append(f"wordlist={digest}")
+
         for param in ["word", "minlength", "maxlength", "pos", "tag", "wordregex", "defregex",  "family", "unsure", "accepted", "rejected", "n", "offset", "sortbylength"]:
             if param in request.form:
                 value = request.form[param]
@@ -131,6 +147,8 @@ def get_status(headword, sense):
 @app.route("/edit", methods=["GET", "POST"])
 def edit():
     if request.method == "GET":
+        msg = ""
+
         words = []
         words_data = {}
 
@@ -139,6 +157,8 @@ def edit():
 
             if word in headwords:
                 words = [unidecode(word).upper()]
+            else:
+                msg = "No results found."
 
             n = 0
             offset = 0
@@ -148,6 +168,17 @@ def edit():
 
             for headword in headwords:
                 match = True
+
+                if match and "wordlist" in request.args:
+                    md5 = request.args.get("wordlist")
+
+                    if md5 in uploaded_wordlists:
+                        wordlist = uploaded_wordlists[md5]
+
+                        if headword not in wordlist:
+                            match = False
+                    else:
+                        msg = "Could not find uploaded wordlist. Try reuploading it."
 
                 if match and "minlength" in request.args:
                     minlength = int(request.args.get("minlength"))
@@ -244,6 +275,9 @@ def edit():
             total_matches = len(matches)
             words = sorted_matches[offset:offset+n]
 
+            if total_matches == 0 and msg == "":
+                msg = "No results found."
+
         for headword in words:
             # list of inflections to check for in the text of the definition; if they're there, deprioritize it to make it easier to choose definitions that make sense on their own
             inflections = set()
@@ -269,7 +303,7 @@ def edit():
 
         args_str = "?" + "&".join([f"{k}={v}" for k, v in request.args.items()])
 
-        return render_template("edit.html", min=min, max=max, n=n, offset=offset, total_matches=total_matches, args_str=args_str, words=words_data, redundant_senses=redundant_senses, get_status=get_status, list_forms=lambda x: ",".join(set([unidecode(x["word"]).upper()] + [unidecode(i).upper() for i in x["forms"] if unidecode(i).upper().isalpha()])))
+        return render_template("edit.html", msg=msg, min=min, max=max, n=n, offset=offset, total_matches=total_matches, args_str=args_str, words=words_data, redundant_senses=redundant_senses, get_status=get_status, list_forms=lambda x: ",".join(set([unidecode(x["word"]).upper()] + [unidecode(i).upper() for i in x["forms"] if unidecode(i).upper().isalpha()])))
 
     if request.method == "POST":
         statuses_out = open("statuses.txt", "a")
