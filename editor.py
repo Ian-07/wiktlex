@@ -131,11 +131,14 @@ def get_status(headword, sense):
 @app.route("/edit", methods=["GET", "POST"])
 def edit():
     if request.method == "GET":
+        words = []
         words_data = {}
 
         if "word" in request.args:
-            word = request.args.get("word")
-            words = [unidecode(word).upper()]
+            word = unidecode(request.args.get("word")).upper()
+
+            if word in headwords:
+                words = [unidecode(word).upper()]
 
             n = 0
             offset = 0
