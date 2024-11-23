@@ -117,7 +117,7 @@ def home():
             uploaded_wordlists[digest] = wordlist
             params.append(f"wordlist={digest}")
 
-        for param in ["word", "minlength", "maxlength", "pos", "tag", "wordregex", "defregex",  "family", "unsure", "accepted", "rejected", "n", "offset", "sortbylength"]:
+        for param in ["word", "minlength", "maxlength", "pos", "tag", "wordregex", "formregex", "defregex", "family", "unsure", "accepted", "rejected", "n", "offset", "sortbylength"]:
             if param in request.form:
                 value = request.form[param]
 
@@ -220,6 +220,18 @@ def edit():
                     wordregex = request.args.get("wordregex")
 
                     if not bool(re.search(wordregex, headword)):
+                        match = False
+
+                if match and "formregex" in request.args:
+                    defregex = request.args.get("formregex")
+                    regex_match_found = False
+
+                    for sense in headwords[headword]:
+                        if bool(re.search(defregex, sense["word"])):
+                            regex_match_found = True
+                            break
+
+                    if not regex_match_found:
                         match = False
 
                 if match and "defregex" in request.args:
