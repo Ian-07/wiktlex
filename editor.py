@@ -35,7 +35,7 @@ for line in statuses_text:
 
         if status != ".":
             statuses[md5] = status
-        else:
+        elif md5 in statuses:
             del statuses[md5]
 
 print("Done.")
