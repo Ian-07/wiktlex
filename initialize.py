@@ -215,6 +215,12 @@ for entry in entries:
 print(f"{n} entries done.")
 print("Expanding alternative forms...")
 
+if run_bonus_scripts:
+    print("BONUS: finding orphaned alternative forms...")
+
+    orphans_out = open("bonus_orphans.txt", "w", encoding="UTF-8")
+    orphans_lines = []
+
 # need to extract the word that each sense is an alternative form of
 alt_patterns = [r"Abbreviation of (.*?)\.?$", r"abstract noun of (.*?)\.?$", r"Acronym of (.*?)\.?$", r"active participle of (.*?)\.?$", r"agent noun of (.*?)\.?$", r"Alternative letter-case form of (.*?)\.?$", r"Alternative form of (.*?)\.?$", r"plural of .*? \(alternative form of (.*?)\)\.?$", r"Alternative reconstruction of (.*?)\.?$", r"Alternative spelling of (.*?)\.?$", r"alternative typography of (.*?)\.?$", r"Aphetic form of (.*?)\.?$", r"Apocopic form of (.*?)\.?$", r"Archaic form of (.*?)\.?$", r"Archaic form of (.*?)\.?$", r"Archaic spelling of (.*?)\.?$", r"Aspirate mutation of (.*?)\.?$", r"attributive form of (.*?)\.?$", r"Augmentative of (.*?)\.?$", r"broad form of (.*?)\.?$", r"causative of (.*?)\.?$", r"Clipping of (.*?)\.?$", r"Combining form of (.*?)\.?$", r"comparative degree of (.*?)\.?$", r"construed with (.*?)\.?$", r"Contraction of (.*?)\.?$", r"Dated form of (.*?)\.?$", r"Dated spelling of (.*?)\.?$", r"Deliberate misspelling of (.*?)\.?$", r"diminutive of (.*?)\.?$", r"Eclipsed form of (.*?)\.?$", r"Eggcorn of (.*?)\.?$", r"Ellipsis of (.*?)\.?$", r"Elongated form of (.*?)\.?$", r"endearing diminutive of (.*?)\.?$", r"endearing form of (.*?)\.?$", r"Euphemistic form of (.*?)\.?$", r"Eye dialect spelling of (.*?)\.?$", r"female equivalent of (.*?)\.?$", r"feminine of (.*?)\.?$", r"feminine plural of (.*?)\.?$", r"feminine plural of the past participle of (.*?)\.?$", r"feminine singular of (.*?)\.?$", r"feminine singular of the past participle of (.*?)\.?$", r"Former name of (.*?)\.?$", r"frequentative of (.*?)\.?$", r"gerund of (.*?)\.?$", r"h-prothesized form of (.*?)\.?$", r"Hard mutation of (.*?)\.?$", r"harmonic variant of (.*?)\.?$", r"Honorific alternative letter-case form of (.*?), sometimes used when referring to God or another important figure who is understood from context\.?$", r"imperfective form of (.*?)\.?$", r"Informal form of (.*?)\.?$", r"Informal spelling of (.*?)\.?$", r"Initialism of (.*?)\.?$", r"iterative of (.*?)\.?$", r"Lenited form of (.*?)\.?$", r"literary form of (.*?)\.?$", r"masculine equivalent of (.*?)\.?$", r"masculine of (.*?)\.?$", r"masculine plural of (.*?)\.?$", r"masculine plural of the past participle of (.*?)\.?$", r"medieval spelling of (.*?)\.?$", r"men's speech form of (.*?)\.?$", r"Misconstruction of (.*?)\.?$", r"Misromanization of (.*?)\.?$", r"Misspelling of (.*?)\.?$", r"Mixed mutation of (.*?)\.?$", r"Nasal mutation of (.*?)\.?$", r"negative form of (.*?)\.?$", r"neuter plural of (.*?)\.?$", r"neuter singular of (.*?)\.?$", r"neuter singular of the past participle of (.*?)\.?$", r"Nomen sacrum form of (.*?)\.?$", r"nominalization of (.*?)\.?$", r"Nonstandard form of (.*?)\.?$", r"Nonstandard spelling of (.*?)\.?$", r"nuqtaless form of (.*?)\.?$", r"Obsolete form of (.*?)\.?$", r"Obsolete spelling of (.*?)\.?$", r"obsolete typography of (.*?)\.?$", r"participle of (.*?)\.?$", r"(deprecated template usage) passive of (.*?)\.?$", r"passive participle of (.*?)\.?$", r"of the past participle of (.*?)\.?$", r"past participle of (.*?)\.?$", r"Pejorative of (.*?)\.?$", r"perfective form of (.*?)\.?$", r"plural of (.*?)\.?$", r"present participle of (.*?)\.?$", r"Pronunciation spelling of (.*?)\.?$", r"Pronunciation variant of (.*?)\.?$", r"Rare form of (.*?)\.?$", r"Rare spelling of (.*?)\.?$", r"reflexive of (.*?)\.?$", r"Romanization of (.*?)\.?$", r"Scribal abbreviation of (.*?)\.?$", r"Short for (.*?)\.?$", r"singular of (.*?)\.?$", r"slender form of (.*?)\.?$", r"Soft mutation of (.*?)\.?$", r"Standard form of (.*?)\.?$", r"Standard spelling of (.*?)\.?$", r"superlative degree of (.*?)\.?$", r"Superseded spelling of (.*?)\.?$", r"Syncopic form of (.*?)\.?$", r"Synonym of (.*?)\.?$", r"t-prothesized form of (.*?)\.?$", r"Uncommon form of (.*?)\.?$", r"Uncommon spelling of (.*?)\.?$", r"verbal noun of (.*?)\.?$", r".*? spelling of (.*?)\.?$"]
 
@@ -239,6 +245,8 @@ def expand_alts(headword):
 
                         alt_headword = unidecode(sense["alt"]).upper()
 
+                        parent_sense_found = False
+
                         if alt_headword != headword:
                             # find all senses with matching capitalization as well as matching part of speech
                             if alt_headword in headwords:
@@ -247,6 +255,11 @@ def expand_alts(headword):
                                         sense_copy = copy.deepcopy(sense)
                                         sense_copy["gloss"] = sense["gloss"].replace(match.group(1), match2.group(1) + " (" + alt_sense["gloss"] + ")")
                                         sense_copies.append(sense_copy)
+
+                                        parent_sense_found = True
+
+                        if run_bonus_scripts and not parent_sense_found and headword.isalpha() and alt_headword.isalpha() and headword != alt_headword:
+                            orphans_lines.append(f"{headword} (parent {alt_headword}) \n")
 
         for sense_copy in sense_copies:
             headwords[headword].append(sense_copy)
@@ -262,6 +275,12 @@ for headword in headwords:
     if time.time() - last_message >= 10:
         last_message = time.time()
         print(f"Expanding alternative forms... ({n}/{len(headwords)} headwords done)")
+
+if run_bonus_scripts:
+    for line in sorted(orphans_lines):
+        orphans_out.write(line)
+
+    print("Outputted orphaned alternative forms to bonus_orphans.txt.")
 
 print("Done.")
 
