@@ -13,6 +13,8 @@ headwords = json.loads(open("headwords.txt", "r", encoding="UTF-8").read())
 
 min_headword_length = min([len(headword) for headword in headwords])
 max_headword_length = max([len(headword) for headword in headwords])
+min_senses = min([len(headwords[headword]) for headword in headwords])
+max_senses = max([len(headwords[headword]) for headword in headwords])
 
 print("Done.")
 print("Generating list of parts of speech...")
@@ -98,7 +100,7 @@ app = Flask(__name__)
 @app.route("/", methods=["GET", "POST"])
 def home():
     if request.method == "GET":
-        return render_template("home.html", min_headword_length=min_headword_length, max_headword_length=max_headword_length, pos=sorted(list(pos)), max_n=max_n)
+        return render_template("home.html", min_headword_length=min_headword_length, max_headword_length=max_headword_length, min_senses=min_senses, max_senses=max_senses, pos=sorted(list(pos)), max_n=max_n)
 
     if request.method == "POST":
         params = []
@@ -117,11 +119,11 @@ def home():
             uploaded_wordlists[digest] = wordlist
             params.append(f"wordlist={digest}")
 
-        for param in ["word", "minlength", "maxlength", "pos", "tag", "wordregex", "formregex", "defregex", "family", "unsure", "accepted", "rejected", "n", "offset", "sortbylength"]:
+        for param in ["word", "minlength", "maxlength", "minsenses", "maxsenses", "pos", "tag", "wordregex", "formregex", "defregex", "family", "unsure", "accepted", "rejected", "n", "offset", "sortbylength"]:
             if param in request.form:
                 value = request.form[param]
 
-                if value != "" and (param != "minlength" or int(value) > min_headword_length) and (param != "maxlength" or int(value) < max_headword_length) and (param == "word" or request.form["word"] == ""):
+                if value != "" and (param != "minlength" or int(value) > min_headword_length) and (param != "maxlength" or int(value) < max_headword_length) and (param != "minsenses" or int(value) > min_senses) and (param != "maxsenses" or int(value) < max_senses) and (param == "word" or request.form["word"] == ""):
                     params.append(f"{param}={request.form[param]}")
 
         return redirect(f"{url_for("edit")}?{"&".join(params)}")
@@ -190,6 +192,18 @@ def edit():
                     maxlength = int(request.args.get("maxlength"))
 
                     if len(headword) > maxlength:
+                        match = False
+
+                if match and "minsenses" in request.args:
+                    minsenses = int(request.args.get("minsenses"))
+
+                    if len(headwords[headword]) < minsenses:
+                        match = False
+
+                if match and "maxsenses" in request.args:
+                    maxsenses = int(request.args.get("maxsenses"))
+
+                    if len(headwords[headword]) > maxsenses:
                         match = False
 
                 if match and "pos" in request.args:

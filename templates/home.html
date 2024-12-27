@@ -31,6 +31,14 @@
                 <td><input type="number" name="maxlength" value="{{ max_headword_length }}" min="{{ min_headword_length }}" max="{{ max_headword_length }}"/></td>
             </tr>
             <tr>
+                <td><label for="minsenses">Minimum # of senses:</label></td>
+                <td><input type="number" name="minsenses" value="{{ min_senses }}" min="{{ min_senses }}" max="{{ max_senses }}"/></td>
+            </tr>
+            <tr>
+                <td><label for="maxsenses">Maximum # of senses:</label></td>
+                <td><input type="number" name="maxsenses" value="{{ max_senses }}" min="{{ min_senses }}" max="{{ max_senses }}"/></td>
+            </tr>
+            <tr>
                 <td><label for="pos"><abbr title="{{ ", ".join(pos) }}">Part of speech:</abbr></label></td>
                 <td><input type="text" name="pos"/></td>
             </tr>
