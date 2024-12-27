@@ -28,6 +28,7 @@ This relies on data originally extracted via Tatu Ylonen's [wiktextract](https:/
 5. Run finalize.py. The final lexicon output consists of these three files:
    * `wordlist.txt`: Plain wordlist, one word per line.
    * `wordlist_defs.txt`: Wordlist with definitions, one word/definition pair per line.
+      * Unfortunately, Zyzzyva does not currently have proper handling for input lines beyond 640 characters in length, so I reluctantly decided to limit this to 634 characters.
    * `wordlist_status.txt`: Stores the status of each sense. Make sure to hold on to this file if you plan on updating the lexicon based on new Wiktionary data later; see step 7 for how to do this.
 6. You *should* now be able to import either of the first two files into any program that can read them.
    * I emphasized "should" because all of the programs listed below have, in my experience, been quite finicky with custom wordlists, so I can't make any guarantees that they will work properly.
