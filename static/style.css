@@ -59,6 +59,10 @@
     text-decoration: line-through;
 }
 
+.alt-form {
+    background-color: #00ff00;
+}
+
 .misspelling {
     background-color: #ffff00;
 }

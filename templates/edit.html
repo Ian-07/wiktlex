@@ -26,7 +26,7 @@
                 <td id="unsure-{{ sense['md5'] }}" class="button unsure{% if status == '?' %} selected{% endif %}"></td>
                 <td id="pending-{{ sense['md5'] }}" class="button pending{% if status == '.' %} selected{% endif %}"></td>
                 <td id="redundant-{{ sense['md5'] }}" class="not-button redundant{% if status == '/' %} selected{% endif %}"></td>
-                <td id="def-{{ sense['md5'] }}" class="{% if sense in redundant_senses[word] %}redundant-definition{% endif %} {% if 'misspelling' in def or 'eggcorn' in def or 'obsolete typography' in def %}misspelling{% endif %} {% if 'abbreviation' in def or 'acronym' in def or 'initialism' in def %}abbreviation{% endif %} {% if sense['pos'] == 'name' %}proper-noun{% endif %} {% if 'AUTOGEN' in sense['tags'] %}autogen{% endif %} {% if 'derogatory' in sense['tags'] or 'offensive' in sense['tags'] or 'slur' in sense['tags'] %}offensive{% endif %}">{{ sense["def"] }}</td>
+                <td id="def-{{ sense['md5'] }}" class="{% if sense in redundant_senses[word] %}redundant-definition{% endif %} {% if 'alt' in sense %}alt-form{% endif %} {% if 'misspelling' in def or 'eggcorn' in def or 'obsolete typography' in def %}misspelling{% endif %} {% if 'abbreviation' in def or 'acronym' in def or 'initialism' in def %}abbreviation{% endif %} {% if sense['pos'] == 'name' %}proper-noun{% endif %} {% if 'AUTOGEN' in sense['tags'] %}autogen{% endif %} {% if 'derogatory' in sense['tags'] or 'offensive' in sense['tags'] or 'slur' in sense['tags'] %}offensive{% endif %}">{{ sense["def"] }}</td>
             </tr>
             {% endfor %}
             {% endfor %}
