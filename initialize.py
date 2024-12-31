@@ -259,7 +259,7 @@ def expand_alts(headword):
                                         parent_sense_found = True
 
                         if run_bonus_scripts and not parent_sense_found and headword.isalpha() and alt_headword.isalpha() and headword != alt_headword:
-                            orphans_lines.append(f"{headword} (parent {alt_headword}) \n")
+                            orphans_lines.append(f"{headword} (parent {alt_headword})\n")
 
         for sense_copy in sense_copies:
             headwords[headword].append(sense_copy)
