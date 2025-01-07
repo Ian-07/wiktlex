@@ -367,38 +367,58 @@ def stats():
     total = {}
 
     for headword in headwords:
-        if len(headword) not in total:
-            accepted[len(headword)] = 0
-            rejected[len(headword)] = 0
-            unsure[len(headword)] = 0
-            pending[len(headword)] = 0
-            total[len(headword)] = 0
+        length = len(headword)
+        letter = headword[0]
 
-        total[len(headword)] += 1
+        if length not in total:
+            accepted[length] = 0
+            rejected[length] = 0
+            unsure[length] = 0
+            pending[length] = 0
+            total[length] = 0
+
+        if letter not in total:
+            accepted[letter] = 0
+            rejected[letter] = 0
+            unsure[letter] = 0
+            pending[letter] = 0
+            total[letter] = 0
+
+        total[length] += 1
+        total[letter] += 1
 
         if overall_status[headword] == "+":
-            accepted[len(headword)] += 1
+            accepted[length] += 1
+            accepted[letter] += 1
         elif overall_status[headword] == "-":
-            rejected[len(headword)] += 1
+            rejected[length] += 1
+            rejected[letter] += 1
         elif overall_status[headword] == "?":
-            unsure[len(headword)] += 1
+            unsure[length] += 1
+            unsure[letter] += 1
         elif overall_status[headword] == ".":
-            pending[len(headword)] += 1
+            pending[length] += 1
+            pending[letter] += 1
 
-    lengths = sorted(total.keys()) + ["Total"]
+    lengths = sorted([i for i in total.keys() if type(i) is int]) + ["Total"]
+    letters = sorted([i for i in total.keys() if type(i) is str]) + ["Total"]
 
-    accepted["Total"] = sum(accepted.values())
-    rejected["Total"] = sum(rejected.values())
-    unsure["Total"] = sum(unsure.values())
-    pending["Total"] = sum(pending.values())
-    total["Total"] = sum(total.values())
+    accepted["Total"] = sum([v for k, v in accepted.items() if type(k) is int])
+    rejected["Total"] = sum([v for k, v in rejected.items() if type(k) is int])
+    unsure["Total"] = sum([v for k, v in unsure.items() if type(k) is int])
+    pending["Total"] = sum([v for k, v in pending.items() if type(k) is int])
+    total["Total"] = sum([v for k, v in total.items() if type(k) is int])
 
-    data = {}
+    length_data = {}
+    letter_data = {}
 
     for length in lengths:
-        data[length] = (accepted[length], rejected[length], unsure[length], pending[length], total[length], (accepted[length] + rejected[length]) / total[length])
+        length_data[length] = (accepted[length], rejected[length], unsure[length], pending[length], total[length], (accepted[length] + rejected[length]) / total[length])
 
-    return render_template("stats.html", data=data)
+    for letter in letters:
+        letter_data[letter] = (accepted[letter], rejected[letter], unsure[letter], pending[letter], total[letter], (accepted[letter] + rejected[letter]) / total[letter])
+
+    return render_template("stats.html", length_data=length_data, letter_data=letter_data)
 
 if __name__ == "__main__":
     app.run()

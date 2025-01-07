@@ -18,9 +18,32 @@
             <th>Total</th>
             <th>Progress</th>
         </tr>
-    {% for item in data.items() %}
+    {% for item in length_data.items() %}
         <tr>
             <td>{% if item[0] == "Total" %}<b>{% endif %}{{ item[0] }}{% if item[0] != "Total" %} letter{% if item[0] > 1 %}s{% endif %}{% endif %}</td>
+            <td class="accepted">{% if item[0] == "Total" %}<b>{% endif %}{{ "{:,}".format(item[1][0]) }}</td>
+            <td class="rejected">{% if item[0] == "Total" %}<b>{% endif %}{{ "{:,}".format(item[1][1]) }}</td>
+            <td class="unsure">{% if item[0] == "Total" %}<b>{% endif %}{{ "{:,}".format(item[1][2]) }}</td>
+            <td class="pending">{% if item[0] == "Total" %}<b>{% endif %}{{ "{:,}".format(item[1][3]) }}</td>
+            <td>{% if item[0] == "Total" %}<b>{% endif %}{{ "{:,}".format(item[1][4]) }}</td>
+            <td><b>{{ "{0:0.4f}".format(100*item[1][5]) }}%</b></td>
+        </tr>
+    {% endfor %}
+    </table>
+    <p>Headwords by starting letter:</p>
+    <table>
+        <tr>
+            <th>Letter</th>
+            <th class="accepted">Accepted</th>
+            <th class="rejected">Rejected</th>
+            <th class="unsure">Unsure</th>
+            <th class="pending">Pending</th>
+            <th>Total</th>
+            <th>Progress</th>
+        </tr>
+    {% for item in letter_data.items() %}
+        <tr>
+            <td>{% if item[0] == "Total" %}<b>{% endif %}{{ item[0] }}</td>
             <td class="accepted">{% if item[0] == "Total" %}<b>{% endif %}{{ "{:,}".format(item[1][0]) }}</td>
             <td class="rejected">{% if item[0] == "Total" %}<b>{% endif %}{{ "{:,}".format(item[1][1]) }}</td>
             <td class="unsure">{% if item[0] == "Total" %}<b>{% endif %}{{ "{:,}".format(item[1][2]) }}</td>
