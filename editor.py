@@ -403,11 +403,8 @@ def stats():
     lengths = sorted([i for i in total.keys() if type(i) is int]) + ["Total"]
     letters = sorted([i for i in total.keys() if type(i) is str]) + ["Total"]
 
-    accepted["Total"] = sum([v for k, v in accepted.items() if type(k) is int])
-    rejected["Total"] = sum([v for k, v in rejected.items() if type(k) is int])
-    unsure["Total"] = sum([v for k, v in unsure.items() if type(k) is int])
-    pending["Total"] = sum([v for k, v in pending.items() if type(k) is int])
-    total["Total"] = sum([v for k, v in total.items() if type(k) is int])
+    for status in [accepted, rejected, unsure, pending, total]:
+        status["Total"] = sum([v for k, v in status.items() if type(k) is int])
 
     length_data = {}
     letter_data = {}
