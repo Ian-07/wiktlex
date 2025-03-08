@@ -366,23 +366,19 @@ def stats():
     pending = {}
     total = {}
 
+    statuses = [accepted, rejected, unsure, pending, total]
+
     for headword in headwords:
         length = len(headword)
         letter = headword[0]
 
         if length not in total:
-            accepted[length] = 0
-            rejected[length] = 0
-            unsure[length] = 0
-            pending[length] = 0
-            total[length] = 0
+            for status in statuses:
+                status[length] = 0
 
         if letter not in total:
-            accepted[letter] = 0
-            rejected[letter] = 0
-            unsure[letter] = 0
-            pending[letter] = 0
-            total[letter] = 0
+            for status in statuses:
+                status[letter] = 0
 
         total[length] += 1
         total[letter] += 1
@@ -403,7 +399,7 @@ def stats():
     lengths = sorted([i for i in total.keys() if type(i) is int]) + ["Total"]
     letters = sorted([i for i in total.keys() if type(i) is str]) + ["Total"]
 
-    for status in [accepted, rejected, unsure, pending, total]:
+    for status in statuses:
         status["Total"] = sum([v for k, v in status.items() if type(k) is int])
 
     length_data = {}
