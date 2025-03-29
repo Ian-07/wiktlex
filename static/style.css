@@ -12,6 +12,7 @@
 
 .accepted {
     background-color: #00ff00;
+    text-align: center;
 }
 
 .rejected {
@@ -36,6 +37,8 @@
 
 .accepted.selected {
     background-color: #008000;
+    color: #ffffff;
+    font-weight: bold;
 }
 
 .rejected.selected {
@@ -81,4 +84,9 @@
 
 .offensive {
     background-color: #ff8080;
+}
+
+.key-selected {
+    background-color: #f0f0f0;
+    /* border-color: #f0f0f0; */
 }

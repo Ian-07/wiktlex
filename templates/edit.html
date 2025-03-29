@@ -13,15 +13,17 @@
         <table>
             {% for word in words %}
             <tr>
-                <th colspan="7" style="text-align:center;">{{ word }} <button id="rejectall-{{ word }}" type="button">Reject all pending</button> <button id="reset-{{ word }}" type="button">Reset all</button></th>
+                <th colspan="7" style="text-align:center;"><span class="headword">{{ word }}</span> <button id="rejectall-{{ word }}" type="button">Reject all pending</button> <button id="reset-{{ word }}" type="button">Reset all</button></th>
             </tr>
             {% for sense in words[word] %}
             {% set status = get_status(word, sense) %}
             {% set def = sense['def'].lower() %}
+            {% set key = none %}
+            {% if loop.index <= 10 %}{% set key = loop.index % 10 %}{% endif %}
             <tr class="sense {{ word }}" id="{{ sense['md5'] }}" forms="{{ list_forms(sense) }}">
                 <input id="form-{{ sense['md5'] }}" type="hidden" name="{{ word }} {{ sense['md5'] }}" value="{{ '.' if status == '/' else status }}"/>
                 <td>{{ sense["word"] }}</td>
-                <td id="accepted-{{ sense['md5'] }}" class="button accepted{% if status == '+' %} selected{% endif %}"></td>
+                <td id="accepted-{{ sense['md5'] }}" class="button accepted{% if status == '+' %} selected{% endif %}{% if key != none %} {{ word }}{{ key }}{% endif %}">{% if key != none %}{{ key }}{% endif %}</td>
                 <td id="rejected-{{ sense['md5'] }}" class="button rejected{% if status == '-' %} selected{% endif %}"></td>
                 <td id="unsure-{{ sense['md5'] }}" class="button unsure{% if status == '?' %} selected{% endif %}"></td>
                 <td id="pending-{{ sense['md5'] }}" class="button pending{% if status == '.' %} selected{% endif %}"></td>
@@ -151,6 +153,60 @@
                 e.returnValue = "";
             }
         });
+
+        const headwordSpans = document.getElementsByClassName("headword");
+        let headwordStrings = [];
+
+        for (let i = 0; i < headwordSpans.length; i++) {
+            headwordStrings.push(headwordSpans[i].textContent);
+        }
+
+        let selectionIndex = 0;
+
+        if (headwordStrings.length >= 1) {
+            window.addEventListener("keydown", function(e) {
+                let rowsToUnhighlight = document.getElementsByClassName(headwordStrings[selectionIndex]);
+
+                for (let i = 0; i < rowsToUnhighlight.length; i++) {
+                    rowsToUnhighlight[i].classList.remove("key-selected");
+                }
+
+                if (!isNaN(e.key)) {
+                    let keyInt = parseInt(e.key)
+
+                    let keyedButton = document.getElementsByClassName(headwordStrings[selectionIndex] + keyInt);
+
+                    if (keyedButton.length >= 1) {
+                        keyedButton[0].click();
+                    }
+
+                    if (selectionIndex < headwordStrings.length-1) {
+                        selectionIndex++;
+                    }
+                } else if (e.key == "ArrowLeft" && selectionIndex > 0) {
+                    selectionIndex--;
+                } else if (e.key == "ArrowRight" && selectionIndex < headwordStrings.length-1) {
+                    selectionIndex++;
+                }
+
+                let rowsToHighlight = document.getElementsByClassName(headwordStrings[selectionIndex]);
+
+                for (let i = 0; i < rowsToHighlight.length; i++) {
+                    rowsToHighlight[i].classList.add("key-selected");
+                }
+
+                if (headwordSpans[selectionIndex].getBoundingClientRect().bottom > window.innerHeight) {
+                    headwordSpans[selectionIndex].scrollIntoView();
+                }
+
+                if (headwordSpans[selectionIndex].getBoundingClientRect().top < 0) {
+                    headwordSpans[selectionIndex].scrollIntoView();
+                }
+            });
+        }
+
+        // this is so that the first headword is highlighted by default
+        window.dispatchEvent(new KeyboardEvent("keydown", {key: "ArrowLeft"}));
 
         const wordsArray = Object.keys(words);
 
