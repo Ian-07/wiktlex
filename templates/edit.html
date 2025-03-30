@@ -177,7 +177,9 @@
                     let keyedButton = document.getElementsByClassName(headwordStrings[selectionIndex] + keyInt);
 
                     if (keyedButton.length >= 1) {
-                        keyedButton[0].click();
+                        if (statuses[keyedButton[0].id.split("-")[1]] == ".") {
+                            keyedButton[0].click();
+                        }
                     }
 
                     if (selectionIndex < headwordStrings.length-1) {
