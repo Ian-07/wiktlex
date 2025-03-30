@@ -197,12 +197,14 @@
                     rowsToHighlight[i].classList.add("key-selected");
                 }
 
-                if (headwordSpans[selectionIndex].getBoundingClientRect().bottom > window.innerHeight) {
-                    headwordSpans[selectionIndex].scrollIntoView();
-                }
+                if (!isNaN(e.key) || e.key == "ArrowLeft" || e.key == "ArrowRight") {
+                    if (headwordSpans[selectionIndex].getBoundingClientRect().bottom > window.innerHeight) {
+                        headwordSpans[selectionIndex].scrollIntoView();
+                    }
 
-                if (headwordSpans[selectionIndex].getBoundingClientRect().top < 0) {
-                    headwordSpans[selectionIndex].scrollIntoView();
+                    if (headwordSpans[selectionIndex].getBoundingClientRect().top < 0) {
+                        headwordSpans[selectionIndex].scrollIntoView();
+                    }
                 }
             });
         }
