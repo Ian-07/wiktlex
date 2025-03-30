@@ -23,7 +23,7 @@
             <tr class="sense {{ word }}" id="{{ sense['md5'] }}" forms="{{ list_forms(sense) }}">
                 <input id="form-{{ sense['md5'] }}" type="hidden" name="{{ word }} {{ sense['md5'] }}" value="{{ '.' if status == '/' else status }}"/>
                 <td>{{ sense["word"] }}</td>
-                <td id="accepted-{{ sense['md5'] }}" class="button accepted{% if status == '+' %} selected{% endif %}{% if key != none %} {{ word }}{{ key }}{% endif %}">{% if key != none %}{{ key }}{% endif %}</td>
+                <td id="accepted-{{ sense['md5'] }}" class="button accepted{% if status == '+' %} selected{% endif %}{% if key != none %} {{ word }}{{ key }}{% endif %}" style="text-align: center;">{% if key != none %}{{ key }}{% endif %}</td>
                 <td id="rejected-{{ sense['md5'] }}" class="button rejected{% if status == '-' %} selected{% endif %}"></td>
                 <td id="unsure-{{ sense['md5'] }}" class="button unsure{% if status == '?' %} selected{% endif %}"></td>
                 <td id="pending-{{ sense['md5'] }}" class="button pending{% if status == '.' %} selected{% endif %}"></td>
