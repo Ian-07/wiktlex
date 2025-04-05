@@ -1,5 +1,6 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, send_file, url_for
 import hashlib
+import io
 import json
 import re
 from unidecode import unidecode
@@ -119,7 +120,7 @@ def home():
             uploaded_wordlists[digest] = wordlist
             params.append(f"wordlist={digest}")
 
-        for param in ["word", "minlength", "maxlength", "minsenses", "maxsenses", "pos", "tag", "wordregex", "formregex", "defregex", "family", "unsure", "accepted", "rejected", "n", "offset", "sortbylength"]:
+        for param in ["word", "minlength", "maxlength", "minsenses", "maxsenses", "pos", "tag", "wordregex", "formregex", "defregex", "family", "unsure", "accepted", "rejected", "n", "offset", "sortbylength", "savetofile"]:
             if param in request.form:
                 value = request.form[param]
 
@@ -297,6 +298,15 @@ def edit():
                 sorted_matches = sorted(matches, key=lambda x: (len(x), x))
             else:
                 sorted_matches = sorted(matches)
+
+            if "savetofile" in request.args:
+                output_text = "\n".join(sorted_matches).encode("UTF-8")
+                output_filename = f"{hashlib.md5(output_text).hexdigest()}.txt"
+                output_data = io.BytesIO()
+                output_data.write(bytes(output_text))
+                output_data.seek(0)
+
+                return send_file(output_data, download_name=output_filename, as_attachment=True)
 
             total_matches = len(matches)
             words = sorted_matches[offset:offset+n]
