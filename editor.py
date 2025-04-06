@@ -120,7 +120,7 @@ def home():
             uploaded_wordlists[digest] = wordlist
             params.append(f"wordlist={digest}")
 
-        for param in ["word", "minlength", "maxlength", "minsenses", "maxsenses", "pos", "tag", "wordregex", "formregex", "defregex", "family", "unsure", "accepted", "rejected", "n", "offset", "sortbylength", "savetofile"]:
+        for param in ["word", "minlength", "maxlength", "minsenses", "maxsenses", "color", "pos", "tag", "wordregex", "formregex", "defregex", "family", "unsure", "accepted", "rejected", "n", "offset", "sortbylength", "savetofile"]:
             if param in request.form:
                 value = request.form[param]
 
@@ -205,6 +205,34 @@ def edit():
                     maxsenses = int(request.args.get("maxsenses"))
 
                     if len(headwords[headword]) > maxsenses:
+                        match = False
+
+                if match and "color" in request.args:
+                    color = request.args["color"]
+                    color_found = False
+
+                    for sense in headwords[headword]:
+                        def_lower = sense["def"].lower()
+
+                        if color == "green" and "alt" in sense:
+                            color_found = True
+
+                        if color == "yellow" and ("misspelling" in def_lower or "eggcorn" in def_lower or "obsolete typography" in def_lower):
+                            color_found = True
+
+                        if color == "blue" and ("abbreviation" in def_lower or "acronym" in def_lower or "initialism" in def_lower):
+                            color_found = True
+
+                        if color == "purple" and sense["pos"] == "name":
+                            color_found = True
+
+                        if color in ["gray", "grey"] and "AUTOGEN" in sense["tags"]:
+                            color_found = True
+
+                        if color == "red" and ("derogatory" in sense["tags"] or "offensive" in sense["tags"] or "slur" in sense["tags"]):
+                            color_found = True
+
+                    if not color_found:
                         match = False
 
                 if match and "pos" in request.args:

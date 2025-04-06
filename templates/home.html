@@ -39,6 +39,18 @@
                 <td><input type="number" name="maxsenses" value="{{ max_senses }}" min="{{ min_senses }}" max="{{ max_senses }}"/></td>
             </tr>
             <tr>
+                <td><label for="color">Highlight color:</label></td>
+                <td><select name="color">
+                    <option value="">N/A</option>
+                    <option value="green">Green (alternative forms)</option>
+                    <option value="yellow">Yellow (misspellings)</option>
+                    <option value="blue">Blue (abbreviations)</option>
+                    <option value="purple">Purple (proper nouns)</option>
+                    <option value="gray">Gray (auto-generated)</option>
+                    <option value="red">Red (potentially offensive)</option>
+                </select></td>
+            </tr>
+            <tr>
                 <td><label for="pos"><abbr title="{{ ", ".join(pos) }}">Part of speech:</abbr></label></td>
                 <td><input type="text" name="pos"/></td>
             </tr>
