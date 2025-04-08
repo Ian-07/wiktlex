@@ -129,7 +129,7 @@ def home():
 
         return redirect(f"{url_for("edit")}?{"&".join(params)}")
 
-# checks whether definition contains
+# checks whether definition contains the word itself, or the words "this", "these", or "such"
 def has_self_reference(definition, inflections):
     split_definition = re.findall(r"\b\w+\b", definition)
 
