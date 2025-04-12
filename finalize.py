@@ -2,7 +2,8 @@ import json
 import re
 from unidecode import unidecode
 
-wordlist_name = input("Enter wordlist name (leave blank for default \'wordlist\'): ")
+wordlist_name = input("Enter wordlist title (leave blank for default \'wordlist\'): ")
+old_wordlist_filename = input("OPTIONAL: enter full filename of old wordlist for comparison (leave blank to skip): ")
 
 if wordlist_name == '':
     wordlist_name = "wordlist"
@@ -78,3 +79,24 @@ for md5 in sorted(list(statuses.keys())):
 wordlist.close()
 wordlist_defs.close()
 wordlist_status.close()
+
+if old_wordlist_filename != '':
+    print(f"Outputting additions and removals to {wordlist_name}_additions.txt and {wordlist_name}_removals.txt...")
+    old_wordlist = open(f"{old_wordlist_filename}", "r")
+    wordlist_additions = open(f"{wordlist_name}_additions.txt", "w")
+    wordlist_removals = open(f"{wordlist_name}_removals.txt", "w")
+
+    old_words = set(old_wordlist.read().split("\n")[:-1])
+    new_words = set(words.keys())
+
+    additions = [new_word for new_word in new_words if new_word not in old_words]
+    removals = [old_word for old_word in old_words if old_word not in new_words]
+
+    for word in sorted(additions, key=lambda x: (len(x), x)):
+        wordlist_additions.write(word + "\n")
+
+    for word in sorted(removals, key=lambda x: (len(x), x)):
+        wordlist_removals.write(word + "\n")
+
+    wordlist_additions.close()
+    wordlist_removals.close()
