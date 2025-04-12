@@ -86,8 +86,11 @@ if old_wordlist_filename != '':
     wordlist_additions = open(f"{wordlist_name}_additions.txt", "w")
     wordlist_removals = open(f"{wordlist_name}_removals.txt", "w")
 
-    old_words = set(old_wordlist.read().split("\n")[:-1])
+    old_words = set(old_wordlist.read().split("\n"))
     new_words = set(words.keys())
+
+    if "" in old_words:
+        old_words.remove("")
 
     additions = [new_word for new_word in new_words if new_word not in old_words]
     removals = [old_word for old_word in old_words if old_word not in new_words]
