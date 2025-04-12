@@ -120,7 +120,7 @@ def home():
             uploaded_wordlists[digest] = wordlist
             params.append(f"wordlist={digest}")
 
-        for param in ["word", "minlength", "maxlength", "minsenses", "maxsenses", "color", "pos", "tag", "wordregex", "formregex", "defregex", "family", "unsure", "accepted", "rejected", "n", "offset", "sortbylength", "savetofile"]:
+        for param in ["word", "minlength", "maxlength", "minsenses", "maxsenses", "color", "selfref", "pos", "tag", "wordregex", "formregex", "defregex", "family", "unsure", "accepted", "rejected", "n", "offset", "sortbylength", "savetofile"]:
             if param in request.form:
                 value = request.form[param]
 
@@ -128,6 +128,26 @@ def home():
                     params.append(f"{param}={request.form[param]}")
 
         return redirect(f"{url_for("edit")}?{"&".join(params)}")
+
+# returns list of all inflections of all senses of a headword, plus "this", "these", and "such", for use in checking for self-references in the definition
+def list_all_selfref_words(headword):
+    inflections = set()
+
+    # these sometimes lead to false positives, but whatever
+    inflections.add("THIS")
+    inflections.add("THESE")
+    inflections.add("SUCH")
+
+    inflections.add(headword)
+
+    for sense in headwords[headword]:
+        for form in sense["forms"]:
+            form_unidecoded = unidecode(form).upper()
+
+            if form_unidecoded.isalpha():
+                inflections.add(form_unidecoded)
+
+    return inflections
 
 # checks whether definition contains the word itself, or the words "this", "these", or "such"
 def has_self_reference(definition, inflections):
@@ -233,6 +253,18 @@ def edit():
                             color_found = True
 
                     if not color_found:
+                        match = False
+
+                if match and "selfref" in request.args:
+                    inflections = list_all_selfref_words(headword)
+                    selfref_found = False
+
+                    for sense in headwords[headword]:
+                        if has_self_reference(unidecode(sense["gloss"]).upper(), inflections):
+                            selfref_found = True
+                            break
+
+                    if not selfref_found:
                         match = False
 
                 if match and "pos" in request.args:
@@ -344,21 +376,7 @@ def edit():
 
         for headword in words:
             # list of inflections to check for in the text of the definition; if they're there, deprioritize it to make it easier to choose definitions that make sense on their own
-            inflections = set()
-
-            # these sometimes lead to false positives, but whatever
-            inflections.add("THIS")
-            inflections.add("THESE")
-            inflections.add("SUCH")
-
-            inflections.add(headword)
-
-            for sense in headwords[headword]:
-                for form in sense["forms"]:
-                    form_unidecoded = unidecode(form).upper()
-
-                    if form_unidecoded.isalpha():
-                        inflections.add(form_unidecoded)
+            inflections = list_all_selfref_words(headword)
 
             # sort by whether it has self-reference, then by number of inflections, then by number of capital letters
             senses_sorted = sorted(headwords[headword], key=lambda x: (has_self_reference(unidecode(x["gloss"]).upper(), inflections), -len(list(set([unidecode(form).upper() for form in x["forms"] if unidecode(form).upper().isalpha()]))), sum(1 for c in x["word"] if c.isupper())))
