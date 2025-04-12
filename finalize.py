@@ -2,6 +2,11 @@ import json
 import re
 from unidecode import unidecode
 
+wordlist_name = input("Enter wordlist name (leave blank for default \'wordlist\'): ")
+
+if wordlist_name == '':
+    wordlist_name = "wordlist"
+
 print("Reading headwords.txt...")
 
 headwords = json.loads(open("headwords.txt", "r", encoding="UTF-8").read())
@@ -18,7 +23,7 @@ for line in statuses_text:
         statuses[md5] = status
 
 print("Done.")
-print("Generating wordlist...")
+print(f"Generating {wordlist_name}...")
 
 words = {}
 alts = {}
@@ -54,11 +59,11 @@ for headword in headwords:
                     add_alt(alt_headword, headword)
 
 print("Done.")
-print("Outputting to wordlist.txt, wordlist_defs.txt, and wordlist_status.txt...")
+print(f"Outputting to {wordlist_name}.txt, {wordlist_name}_defs.txt, and {wordlist_name}_status.txt...")
 
-wordlist = open("wordlist.txt", "w")
-wordlist_defs = open("wordlist_defs.txt", "w", encoding="UTF-8")
-wordlist_status = open("wordlist_status.txt", "w")
+wordlist = open(f"{wordlist_name}.txt", "w")
+wordlist_defs = open(f"{wordlist_name}_defs.txt", "w", encoding="UTF-8")
+wordlist_status = open(f"{wordlist_name}_status.txt", "w")
 
 for word in sorted(list(words.keys())):
     wordlist.write(word + "\n")
