@@ -166,7 +166,8 @@ for entry in entries:
 
                     if "forms" in entry.keys():
                         for form in entry["forms"]:
-                            sense_data["forms"].append(form["form"])
+                            if ("tags" not in form or ("abbreviation" not in form["tags"] and "symbol" not in form["tags"] and ("infinitive" not in form["tags"] or form["form"] != sense_data["word"]))) and form["form"] != "glossary" and form["form"] != "no-table-tags":
+                                sense_data["forms"].append(form["form"])
 
                     if "qualifier" in sense.keys():
                         sense_data["tags"].append(sense["qualifier"])
