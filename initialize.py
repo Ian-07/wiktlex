@@ -228,9 +228,13 @@ alt_patterns = [r"Abbreviation of (.*?)\.?$", r"abstract noun of (.*?)\.?$", r"A
 
 # if an alternative form, make copies of sense with parentheticals for each definition of the word
 # sometimes captures too much, but if so, it just won't copy the sense since there's no definition associated with the captured string
+headwords_started = {}
 headwords_expanded = {}
 
 def expand_alts(headword):
+    # prevents infinite recursion
+    headwords_started[headword] = True
+
     if headword not in headwords_expanded.keys():
         sense_copies = []
 
@@ -252,6 +256,9 @@ def expand_alts(headword):
                         if alt_headword != headword:
                             # find all senses with matching capitalization as well as matching part of speech
                             if alt_headword in headwords:
+                                if alt_headword not in headwords_started:
+                                    expand_alts(alt_headword)
+
                                 for alt_sense in headwords[alt_headword]:
                                     if alt_sense["word"] == sense["alt"] and get_pos_abbr(alt_sense["pos"]) == get_pos_abbr(sense["pos"]):
                                         sense_copy = copy.deepcopy(sense)
