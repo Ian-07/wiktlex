@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Editor</title>
+    <title>{% if total_matches > 0 or msg != "" %}({{ total_matches }}) {% endif %}Editor</title>
 </head>
 <body>
     <link href="../static/style.css" rel="stylesheet" />
