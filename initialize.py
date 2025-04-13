@@ -170,7 +170,8 @@ for entry in entries:
                                 sense_data["forms"].append(form["form"])
 
                     if "qualifier" in sense.keys():
-                        sense_data["tags"].append(sense["qualifier"])
+                        # addresses weird bug in wiktextract where the qualifier text gets duplicated when there's a semicolon
+                        sense_data["tags"].append("; ".join(list(dict.fromkeys(sense["qualifier"].split("; ")))))
 
                     if "tags" in sense.keys():
                         sense_data["tags"] += sense["tags"]
@@ -187,7 +188,7 @@ for entry in entries:
                                 displayed_tags = match.group()[1:-1].split(", ")
 
                                 for tag in displayed_tags:
-                                    if "topics" in sense.keys() and tag in sense["topics"] and tag not in sense_data["tags"]:
+                                    if tag not in sense_data["tags"]:
                                         sense_data["tags"].append(tag)
 
                     # if a specific sense is marked as uncountable or not-comparable (and not merely "usually uncountable" or "countable and uncountable"), remove all inflections.
@@ -413,13 +414,24 @@ for headword in headwords:
 
         for tag in sense["tags"]:
             if tag not in excluded_tags:
-                tags_to_include.append(tag)
+                tags_to_include.append(tag.replace("-", " "))
+
+        # remove duplicate tags
+        tags_to_include = list(dict.fromkeys(tags_to_include))
 
         if len(tags_to_include) >= 1:
             definition += "("
 
             for tag in tags_to_include:
-                definition += tag.replace("-", " ") + ", "
+                superstring_found = False
+
+                # don't add tag to definition text if it's a substring of another tag
+                for other_tag in tags_to_include:
+                    if tag != other_tag and tag in other_tag:
+                        superstring_found = True
+
+                if not superstring_found:
+                    definition += tag + ", "
 
             definition = definition[:-2] + ") "
 
