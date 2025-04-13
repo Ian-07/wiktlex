@@ -263,6 +263,27 @@ def expand_alts(headword):
                                     if alt_sense["word"] == sense["alt"] and get_pos_abbr(alt_sense["pos"]) == get_pos_abbr(sense["pos"]):
                                         sense_copy = copy.deepcopy(sense)
                                         sense_copy["gloss"] = sense["gloss"].replace(match.group(1), match2.group(1) + " (" + alt_sense["gloss"] + ")")
+
+                                        # keep countability/comparability consistent between parent and child
+                                        if (alt_sense["pos"] == "noun" or alt_sense["pos"] == "name") and "uncountable" in alt_sense["tags"] and "countable" not in alt_sense["tags"] and "usually" not in alt_sense["tags"] and ("uncountable" not in sense_copy["tags"] or "countable" in sense_copy["tags"]):
+                                            sense_copy["tags"].append("uncountable")
+
+                                            if "countable" in sense_copy["tags"]:
+                                                sense_copy["tags"].remove("countable")
+
+                                            sense_copy["forms"] = []
+
+                                        if (alt_sense["pos"] == "noun" or alt_sense["pos"] == "name") and ("uncountable" not in alt_sense["tags"] or "countable" in alt_sense["tags"] or "usually" in alt_sense["tags"]) and "countable" not in sense_copy["tags"] and "uncountable" in sense_copy["tags"]:
+                                            sense_copy["tags"].remove("uncountable")
+
+                                        if (alt_sense["pos"] == "adj" and "not-comparable" in alt_sense["tags"] and "comparable" not in alt_sense["tags"]) and "usually" not in alt_sense["tags"] and ("not-comparable" not in sense_copy["tags"] or "comparable" in sense_copy["tags"]):
+                                            sense_copy["tags"].append("not-comparable")
+
+                                            if "comparable" in sense_copy["tags"]:
+                                                sense_copy["tags"].remove("comparable")
+
+                                            sense_copy["forms"] = []
+
                                         sense_copies.append(sense_copy)
 
                                         parent_sense_found = True
