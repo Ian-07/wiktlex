@@ -328,78 +328,71 @@ print("Automatically adding inflections for some words... (these can be rejected
 
 # warning: this will occasionally lead to some clearly nonsensical constructions that i can't be bothered to figure out how to automatically filter out, so just reject those when they pop up
 for headword in headwords:
-    # to avoid auto-pluralizing words that are already plurals of other words
-    plural_found = False
-    for sense in headwords[headword]:
-        if "plural" in sense["tags"]:
-            plural_found = True
-
     # pluralizes the following types of senses:
     # "unknown or uncertain plurals" (does not have forms listed but also does not have "uncountable" tag)
     # "plural not attested" (has the "no-plural" tag)
     # any entries that use {{head|en|noun}} or {{head|en|verb}} directly and thus don't list inflections
-    if not plural_found:
-        for sense in headwords[headword]:
-            # please forgive me for this monstrosity
-            if sense["pos"] in ["noun", "num"] and len(sense["forms"]) == 0 and (("countable" not in sense["tags"] and "uncountable" not in sense["tags"] and "form-of" not in sense["tags"] and "plural" not in sense["tags"] and "misspelling" not in sense["tags"]) or "no-plural" in sense["tags"]) and "plural" not in sense["gloss"]:
-                if headword[-1] == "Y" and len(headword) >= 2 and headword[-2] not in "AEIOUY":
-                    plural = headword[:-1] + "IES"
-                elif headword[-3:] == "SIS":
-                    plural = headword[:-2] + "ES"
-                elif headword[-1] in "JSXZ" or headword[-2:] in ["SH", "ZH"] or headword[-3:] in ["NCH", "SCH", "TCH"] or headword[-4:] in ["EACH", "EECH", "OACH", "OUCH"]:
-                    plural = headword + "ES"
+    for sense in headwords[headword]:
+        # please forgive me for this monstrosity
+        if sense["pos"] in ["noun", "num"] and len(sense["forms"]) == 0 and (("countable" not in sense["tags"] and "uncountable" not in sense["tags"] and "form-of" not in sense["tags"] and "plural" not in sense["tags"]) or "no-plural" in sense["tags"]) and "plural" not in sense["gloss"]:
+            if headword[-1] == "Y" and len(headword) >= 2 and headword[-2] not in "AEIOUY":
+                plural = headword[:-1] + "IES"
+            elif headword[-3:] == "SIS":
+                plural = headword[:-2] + "ES"
+            elif headword[-1] in "JSXZ" or headword[-2:] in ["SH", "ZH"] or headword[-3:] in ["NCH", "SCH", "TCH"] or headword[-4:] in ["EACH", "EECH", "OACH", "OUCH"]:
+                plural = headword + "ES"
+            else:
+                plural = headword + "S"
+
+            sense_copy = copy.deepcopy(sense)
+            sense_copy["forms"].append(plural)
+            sense_copy["tags"].append("AUTOGEN")
+            headwords[headword].append(sense_copy)
+
+        if sense["pos"] == "verb" and len(sense["forms"]) == 0 and "form-of" not in sense["tags"]:
+            s = None
+            ing = None
+            ed = None
+
+            if headword[-1] == "Y" and len(headword) >= 2 and headword[-2] not in "AEIOUY":
+                s = headword[:-1] + "IES"
+                ing = headword + "ING"
+                ed = headword[:-1] + "IED"
+            elif headword[-1] == "E":
+                ed = headword + "D"
+                s = headword + "S"
+
+                if len(headword) >= 2 and headword[-2] not in "AEIO":
+                    ing = headword[:-1] + "ING"
                 else:
-                    plural = headword + "S"
-
-                sense_copy = copy.deepcopy(sense)
-                sense_copy["forms"].append(plural)
-                sense_copy["tags"].append("AUTOGEN")
-                headwords[headword].append(sense_copy)
-
-            if sense["pos"] == "verb" and len(sense["forms"]) == 0 and "form-of" not in sense["tags"]:
-                s = None
-                ing = None
-                ed = None
-
-                if headword[-1] == "Y" and len(headword) >= 2 and headword[-2] not in "AEIOUY":
-                    s = headword[:-1] + "IES"
                     ing = headword + "ING"
-                    ed = headword[:-1] + "IED"
-                elif headword[-1] == "E":
-                    ed = headword + "D"
+            elif len(headword) >= 2 and headword[-1] in "BCDFGKLMNPRSTV" and headword[-2] in "AEIOUY" and headword[-1] != headword[-2] and (len(headword) == 2 or headword[-2] != headword[-3]):
+                if headword[-1] == "S":
+                    s = headword + "SES"
+                else:
                     s = headword + "S"
 
-                    if len(headword) >= 2 and headword[-2] not in "AEIO":
-                        ing = headword[:-1] + "ING"
-                    else:
-                        ing = headword + "ING"
-                elif len(headword) >= 2 and headword[-1] in "BCDFGKLMNPRSTV" and headword[-2] in "AEIOUY" and headword[-1] != headword[-2] and (len(headword) == 2 or headword[-2] != headword[-3]):
-                    if headword[-1] == "S":
-                        s = headword + "SES"
-                    else:
-                        s = headword + "S"
-
-                    ing = headword + headword[-1] + "ING"
-                    ed = headword + headword[-1] + "ED"
-                elif headword[-1] in "JXZ" or headword[-2:] in ["SH", "ZH"] or headword[-3:] in ["NCH", "SCH", "TCH"] or headword[-4:] in ["EACH", "EECH", "OACH", "OUCH"]:
+                ing = headword + headword[-1] + "ING"
+                ed = headword + headword[-1] + "ED"
+            elif headword[-1] in "JXZ" or headword[-2:] in ["SH", "ZH"] or headword[-3:] in ["NCH", "SCH", "TCH"] or headword[-4:] in ["EACH", "EECH", "OACH", "OUCH"]:
+                s = headword + "ES"
+                ing = headword + "ING"
+                ed = headword + "ED"
+            else:
+                if headword[-1] == "S":
                     s = headword + "ES"
-                    ing = headword + "ING"
-                    ed = headword + "ED"
                 else:
-                    if headword[-1] == "S":
-                        s = headword + "ES"
-                    else:
-                        s = headword + "S"
+                    s = headword + "S"
 
-                    ing = headword + "ING"
-                    ed = headword + "ED"
+                ing = headword + "ING"
+                ed = headword + "ED"
 
-                sense_copy = copy.deepcopy(sense)
-                sense_copy["forms"].append(s)
-                sense_copy["forms"].append(ing)
-                sense_copy["forms"].append(ed)
-                sense_copy["tags"].append("AUTOGEN")
-                headwords[headword].append(sense_copy)
+            sense_copy = copy.deepcopy(sense)
+            sense_copy["forms"].append(s)
+            sense_copy["forms"].append(ing)
+            sense_copy["forms"].append(ed)
+            sense_copy["tags"].append("AUTOGEN")
+            headwords[headword].append(sense_copy)
 
 print("Done.")
 print("Rendering senses...")
