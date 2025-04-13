@@ -9,7 +9,7 @@ print("WARNING: This script will overwrite headwords.txt and statuses.txt!")
 
 raw_filename = input("Enter filename for raw wiktextract data (leave blank for default 'raw-wiktextract-data.jsonl'): ")
 
-run_bonus_scripts = input("Run bonus searches for potentially missing words? (type anything for yes, leave blank for no) ") != ""
+run_bonus_scripts = input("Run bonus searches for potentially missing words? (type anything for yes, leave blank for no): ") != ""
 
 if raw_filename == '':
     raw_filename = "raw-wiktextract-data.jsonl"
@@ -76,7 +76,7 @@ if run_bonus_scripts:
     for entry_word in entry_words:
         no_hyphens = entry_word.replace("-", "")
 
-        if no_hyphens not in entry_words.keys() and unidecode(no_hyphens).isalpha():
+        if entry_word[0] != "-" and entry_word[-1] != "-" and no_hyphens not in entry_words.keys() and unidecode(no_hyphens).isalpha():
             hyphenated_lines.append(f"{unidecode(no_hyphens).upper()} (\"{no_hyphens}\" from \"{entry_word}\")\n")
 
     for line in sorted(hyphenated_lines):
