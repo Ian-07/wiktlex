@@ -70,7 +70,7 @@ for word in sorted(list(words.keys())):
     wordlist.write(word + "\n")
     # current zyzzyva limits input lines to 640 characters, and anything longer than this leads to some funky behavior
     # hopefully, a future version will increase this limit, or at least improve the handling of long definitions
-    wordlist_defs.write(f"{word} {" / ".join(words[word])}{" - also " + ", ".join(sorted(alts[word])) if word in alts else ""}"[:634] + "\n")
+    wordlist_defs.write(f"{word} {" / ".join(words[word])}{" - also " + ", ".join(sorted(alts[word])) if word in alts else ""}"[:629] + "\n")
 
 # cleaned-up version of statuses.txt, since some statuses might have been overridden
 for md5 in sorted(list(statuses.keys())):

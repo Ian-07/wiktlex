@@ -34,7 +34,7 @@ This relies on data originally extracted via Tatu Ylonen's [wiktextract](https:/
    * The final lexicon output consists of these three files:
       * `(wordlist name).txt`: Plain wordlist, one word per line.
       * `(wordlist name)_defs.txt`: Wordlist with definitions, one word/definition pair per line.
-         * Unfortunately, Zyzzyva does not currently have proper handling for input lines beyond 640 characters in length, so I reluctantly decided to limit this to 634 characters.
+         * Unfortunately, Zyzzyva does not currently have proper handling for input lines beyond 640 characters in length, so I reluctantly decided to limit this to 629 characters.
       * `(wordlist name)_status.txt`: Stores the status of each sense. Make sure to hold on to this file if you plan on updating the lexicon based on new Wiktionary data later; see step 7 for how to do this.
    * If you selected a previous wordlist for comparison, you'll also get these two files:
       * `(wordlist name)_additions.txt`: A list of words in the new lexicon but not the old one, sorted by length.
