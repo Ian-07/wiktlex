@@ -394,7 +394,7 @@ for headword in headwords:
             sense_copy["tags"].append("AUTOGEN")
             headwords[headword].append(sense_copy)
 
-        if sense["pos"] == "verb" and len(sense["forms"]) == 0 and "form-of" not in sense["tags"]:
+        if sense["pos"] == "verb" and len(sense["forms"]) <= 2 and "form-of" not in sense["tags"]:
             s = None
             ing = None
             ed = None
@@ -458,9 +458,6 @@ for headword in headwords:
             else:
                 er = headword + "ER"
                 est = headword + "EST"
-            '''elif headword[-1] in "JXZ" or headword[-2:] in ["SH", "ZH"] or headword[-3:] in ["NCH", "SCH", "TCH"] or headword[-4:] in ["EACH", "EECH", "OACH", "OUCH"]:
-                er = headword + "ER"
-                est = headword + "EST"'''
 
             sense_copy = copy.deepcopy(sense)
             sense_copy["forms"].append(er)
