@@ -100,7 +100,15 @@ if run_bonus_scripts:
                     for linkage in entry[linkage_key]:
                         linked_entry = linkage["word"]
 
-                        if linked_entry not in entry_words.keys() and unidecode(linked_entry).isalpha():
+                        if linked_entry not in entry_words.keys() and unidecode(linked_entry).replace("-", "").isalpha():
+                            redlinks_lines.append(f"{unidecode(linked_entry).upper()} (\"{linked_entry}\" from \"{entry_word}\")\n")
+
+            if "forms" in entry.keys():
+                for form in entry["forms"]:
+                    if "tags" in form and "alternative" in form["tags"]:
+                        linked_entry = form["form"]
+
+                        if linked_entry not in entry_words.keys() and unidecode(linked_entry).replace("-", "").isalpha():
                             redlinks_lines.append(f"{unidecode(linked_entry).upper()} (\"{linked_entry}\" from \"{entry_word}\")\n")
 
             if "senses" in entry.keys():
@@ -109,7 +117,7 @@ if run_bonus_scripts:
                         for link in sense["links"]:
                             linked_entry = link[1].split("#")[0]
 
-                            if linked_entry not in entry_words.keys() and unidecode(linked_entry).isalpha():
+                            if linked_entry not in entry_words.keys() and unidecode(linked_entry).replace("-", "").isalpha():
                                 redlinks_lines.append(f"{unidecode(linked_entry).upper()} (\"{linked_entry}\" from \"{entry_word}\")\n")
 
     for line in sorted(redlinks_lines):
