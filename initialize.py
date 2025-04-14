@@ -499,6 +499,10 @@ for headword in headwords:
         # remove duplicate tags
         tags_to_include = list(dict.fromkeys(tags_to_include))
 
+        # if visible tags list contains ONLY "also", "often", "sometimes", or "usually" on their own, make them invisible
+        if tags_to_include in [["also"], ["often"], ["sometimes"], ["usually"]]:
+            tags_to_include = []
+
         if len(tags_to_include) >= 1:
             definition += "("
 
