@@ -263,7 +263,7 @@ def expand_alts(headword):
                 match = re.match(pattern, sense["gloss"], flags=re.IGNORECASE)
 
                 if match is not None:
-                    match2 = re.match(r"(.*?)( \(|\.|;|!|\?|$)", match.group(1))
+                    match2 = re.match(r"(.*?)( \(|\.|;|:|,|!|\?|$)", match.group(1))
 
                     if match2 is not None:
                         alt = match2.group(1)
