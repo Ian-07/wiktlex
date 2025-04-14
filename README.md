@@ -7,7 +7,7 @@ This relies on data originally extracted via Tatu Ylonen's [wiktextract](https:/
 
 # Instructions
 1. Download the latest version of `raw-wiktextract-data.jsonl` from https://kaikki.org/dictionary/rawdata.html.
-   * Note that this is a pretty large file: 18.1 GB as of writing. You could also try the smaller (2.4 GB as of writing) English-entry-only output at https://kaikki.org/dictionary/English/, but I opted to use the full file just to be safe.
+   * Note that this is a pretty large file: 18.1 GB as of writing. You could also try the smaller (2.4 GB as of writing) English-entry-only output at https://kaikki.org/dictionary/English/, but I recommend using the full file if you're not low on space, since this one includes Translingual terms, some of which have been accepted into IWI.
    * kaikki.org is regularly updated based on periodic dumps of data from Wiktionary. The dump date should be within the last month.
    * If the site is not available, or if the latest wiktextract output is significantly out of date, then see wiktextract's own README for instructions on installing and running wiktextract yourself.
 2. Move the file into this directory.

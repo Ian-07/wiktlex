@@ -23,7 +23,7 @@ last_message = time.time()
 for line in raw:
     entry = json.loads(line)
 
-    if "lang" in entry.keys() and entry["lang"] == "English":
+    if "lang" in entry.keys() and entry["lang"] in ["English", "Translingual"]:
         entries.append(entry)
 
     n += 1
@@ -117,7 +117,7 @@ if run_bonus_scripts:
 
     print("Outputted redlinks to bonus_redlinks.txt.")
 
-print("Extracting and organizing data from English entries...")
+print("Extracting and organizing data from English/Translingual entries...")
 
 headwords = {}
 headwords_out = open("headwords.txt", "w", encoding="UTF-8")
@@ -145,77 +145,81 @@ for entry in entries:
     if "senses" in entry.keys() and "pos" in entry.keys():
         headword = unidecode(entry["word"]).upper()
 
-        if headword not in headwords:
-            headwords[headword] = []
+        if len(headword) >= 1:
+            if headword not in headwords:
+                headwords[headword] = []
 
-        for sense in entry["senses"]:
-            # subdefinitions actually include glosses for all levels of the definition so handling that is a bit awkward
-            if "glosses" in sense.keys():
-                glosses = sense["glosses"]
-            else:
-                glosses = [""]
+            for sense in entry["senses"]:
+                # subdefinitions actually include glosses for all levels of the definition so handling that is a bit awkward
+                if "glosses" in sense.keys():
+                    glosses = sense["glosses"]
+                else:
+                    glosses = [""]
 
-            if "\n" not in glosses[0]: # weird case where the list of derived/related terms is misinterpreted as a definition
-                for gloss in glosses:
-                    sense_data = {}
-                    sense_data["word"] = entry["word"] # retains original capitalization and/or diacritics
-                    sense_data["gloss"] = gloss.replace("\n", " ")
-                    sense_data["pos"] = entry["pos"]
-                    sense_data["forms"] = []
-                    sense_data["tags"] = []
-
-                    if "forms" in entry.keys():
-                        for form in entry["forms"]:
-                            if ("tags" not in form or ("abbreviation" not in form["tags"] and "alternative" not in form["tags"] and "symbol" not in form["tags"] and ("infinitive" not in form["tags"] or form["form"] != sense_data["word"]))) and form["form"] != "glossary" and form["form"] != "no-table-tags" and (sense_data["word"][-1] != "S" or form["form"][-1] != "s"):
-                                sense_data["forms"].append(form["form"])
-
-                    if "qualifier" in sense.keys():
-                        # addresses weird bug in wiktextract where the qualifier text gets duplicated when there's a semicolon
-                        sense_data["tags"].append("; ".join(list(dict.fromkeys(sense["qualifier"].split("; ")))))
-
-                    if "tags" in sense.keys():
-                        sense_data["tags"] += sense["tags"]
-
-                    if "raw_tags" in sense.keys():
-                        sense_data["tags"] += sense["raw_tags"]
-
-                    # to extract some additional topical tags that wouldn't otherwise be included in the definition
-                    if "raw_glosses" in sense.keys():
-                        for raw_gloss in sense["raw_glosses"]:
-                            match = re.match(r"\(.*?\)", raw_gloss)
-
-                            if match is not None:
-                                displayed_tags = match.group()[1:-1].split(", ")
-
-                                for tag in displayed_tags:
-                                    if tag not in sense_data["tags"]:
-                                        sense_data["tags"].append(tag)
-
-                    if "uncountable" in sense_data["tags"] and "(countable)" in sense_data["gloss"]:
-                        sense_data["tags"].remove("uncountable")
-
-                    # if a specific sense is marked as uncountable or not-comparable (and not merely "usually uncountable" or "countable and uncountable"), remove all inflections.
-                    if (((entry["pos"] == "noun" or entry["pos"] == "name") and "uncountable" in sense_data["tags"] and "countable" not in sense_data["tags"]) or (entry["pos"] == "adj" and "not-comparable" in sense_data["tags"] and "comparable" not in sense_data["tags"])) and "usually" not in sense_data["tags"]:
+                if "\n" not in glosses[0]: # weird case where the list of derived/related terms is misinterpreted as a definition
+                    for gloss in glosses:
+                        sense_data = {}
+                        sense_data["word"] = entry["word"] # retains original capitalization and/or diacritics
+                        sense_data["gloss"] = gloss.replace("\n", " ")
+                        sense_data["pos"] = entry["pos"]
                         sense_data["forms"] = []
+                        sense_data["tags"] = []
 
-                    # to prevent duplication of identical inflected forms (e.g. past and past participle for a verb)
-                    sense_data["forms"] = list(dict.fromkeys(sense_data["forms"]))
+                        if "forms" in entry.keys():
+                            for form in entry["forms"]:
+                                if ("tags" not in form or ("abbreviation" not in form["tags"] and "alternative" not in form["tags"] and "symbol" not in form["tags"] and ("infinitive" not in form["tags"] or form["form"] != sense_data["word"]))) and form["form"] != "glossary" and form["form"] != "no-table-tags" and (sense_data["word"][-1] != "S" or form["form"][-1] != "s"):
+                                    sense_data["forms"].append(form["form"])
 
-                    # to prevent duplication of higher-level definitions while still having one copy of them
-                    definition_already_exists = False
+                        if "qualifier" in sense.keys():
+                            # addresses weird bug in wiktextract where the qualifier text gets duplicated when there's a semicolon
+                            sense_data["tags"].append("; ".join(list(dict.fromkeys(sense["qualifier"].split("; ")))))
 
-                    sense_data_json = json.dumps(sense_data)
-                    for existing_sense in headwords[headword]:
-                        if json.dumps(existing_sense) == sense_data_json:
-                            definition_already_exists = True
+                        if "tags" in sense.keys():
+                            sense_data["tags"] += sense["tags"]
 
-                    if not definition_already_exists:
-                        headwords[headword].append(sense_data)
+                        if "raw_tags" in sense.keys():
+                            sense_data["tags"] += sense["raw_tags"]
+
+                        # to extract some additional topical tags that wouldn't otherwise be included in the definition
+                        if "raw_glosses" in sense.keys():
+                            for raw_gloss in sense["raw_glosses"]:
+                                match = re.match(r"\(.*?\)", raw_gloss)
+
+                                if match is not None:
+                                    displayed_tags = match.group()[1:-1].split(", ")
+
+                                    for tag in displayed_tags:
+                                        if tag not in sense_data["tags"]:
+                                            sense_data["tags"].append(tag)
+
+                        if "uncountable" in sense_data["tags"] and "(countable)" in sense_data["gloss"]:
+                            sense_data["tags"].remove("uncountable")
+
+                        if entry["lang"] == "Translingual":
+                            sense_data["tags"].append("TRANSLINGUAL")
+
+                        # if a specific sense is marked as uncountable or not-comparable (and not merely "usually uncountable" or "countable and uncountable"), remove all inflections.
+                        if (((entry["pos"] == "noun" or entry["pos"] == "name") and "uncountable" in sense_data["tags"] and "countable" not in sense_data["tags"]) or (entry["pos"] == "adj" and "not-comparable" in sense_data["tags"] and "comparable" not in sense_data["tags"])) and "usually" not in sense_data["tags"]:
+                            sense_data["forms"] = []
+
+                        # to prevent duplication of identical inflected forms (e.g. past and past participle for a verb)
+                        sense_data["forms"] = list(dict.fromkeys(sense_data["forms"]))
+
+                        # to prevent duplication of higher-level definitions while still having one copy of them
+                        definition_already_exists = False
+
+                        sense_data_json = json.dumps(sense_data)
+                        for existing_sense in headwords[headword]:
+                            if json.dumps(existing_sense) == sense_data_json:
+                                definition_already_exists = True
+
+                        if not definition_already_exists:
+                            headwords[headword].append(sense_data)
 
     n += 1
     if time.time() - last_message >= 10:
         last_message = time.time()
-        print(f"Extracting and organizing data from English entries... ({n}/{len(entries)} entries done)")
+        print(f"Extracting and organizing data from English/Translingual entries... ({n}/{len(entries)} entries done)")
 
 print(f"{n} entries done.")
 print("Expanding alternative forms...")
@@ -476,7 +480,7 @@ for headword in headwords:
 print("Done.")
 print("Rendering senses...")
 
-excluded_tags = {"abbreviation", "acronym", "adjective", "adverb", "adverbial", "agent", "ALLOW ADJ AUTOGEN", "alt-of", "alternative", "Anglicised", "anterior", "apocopic", "aspect", "attributive", "AUTOGEN", "auxiliary", "capitalized", "catenative", "causative", "character", "clipping", "comparable", "comparative", "comparative-only", "conjunctive", "contracted", "copulative", "countable", "dative", "defective", "definite", "definition", "deliberate", "demonstrative", "degree", "demonym", "determiner", "direct", "distal", "ditransitive", "duration", "ellipsis", "empty-gloss", "ergative", "error-lua-exec", "error-misspelling", "familiar", "feminine", "first-person", "focus", "form-of", "frequency", "g-person", "genitive", "gerund", "hard", "heading", "imperative-only", "imperfect", "impersonal", "in-compounds", "in-plural", "indeclinable", "indefinite", "indicative", "indirect", "initialism", "intensifier", "interrogative", "intransitive", "invariable", "irregular", "letter", "location", "lowercase", "manner", "masculine", "medial", "misconstruction", "misspelling", "modal", "morpheme", "negative", "neologism", "neuter", "no-gloss", "no-past-participle", "no-plural", "no-present-participle", "nominative", "not countable", "not comparable", "not-comparable", "noun-from-verb", "objective", "oblique", "participle", "passive", "perfect", "perfective", "personal", "phoneme", "phrase", "place", "plural", "plural-normally", "plural-only", "positive", "possessive", "predicative", "present", "pronoun", "pronunciation-spelling", "proper-noun", "proximal", "reciprocal", "reduplication", "reflexive", "relative", "romanization", "second-person", "sequence", "singular", "singular-only", "stative", "strict-sense", "subjective", "subjunctive", "substantive", "superlative", "third-person", "time", "transitive", "uncountable", "universal", "uppercase", "variant", "verb", "vocative", "with-infinitive"}
+excluded_tags = {"abbreviation", "acronym", "adjective", "adverb", "adverbial", "agent", "ALLOW ADJ AUTOGEN", "alt-of", "alternative", "Anglicised", "anterior", "apocopic", "aspect", "attributive", "AUTOGEN", "auxiliary", "capitalized", "catenative", "causative", "character", "clipping", "comparable", "comparative", "comparative-only", "conjunctive", "contracted", "copulative", "countable", "dative", "defective", "definite", "definition", "deliberate", "demonstrative", "degree", "demonym", "determiner", "direct", "distal", "ditransitive", "duration", "ellipsis", "empty-gloss", "ergative", "error-lua-exec", "error-misspelling", "familiar", "feminine", "first-person", "focus", "form-of", "frequency", "g-person", "genitive", "gerund", "hard", "heading", "imperative-only", "imperfect", "impersonal", "in-compounds", "in-plural", "indeclinable", "indefinite", "indicative", "indirect", "initialism", "intensifier", "interrogative", "intransitive", "invariable", "irregular", "letter", "location", "lowercase", "manner", "masculine", "medial", "misconstruction", "misspelling", "modal", "morpheme", "negative", "neologism", "neuter", "no-gloss", "no-past-participle", "no-plural", "no-present-participle", "nominative", "not countable", "not comparable", "not-comparable", "noun-from-verb", "objective", "oblique", "participle", "passive", "perfect", "perfective", "personal", "phoneme", "phrase", "place", "plural", "plural-normally", "plural-only", "positive", "possessive", "predicative", "present", "pronoun", "pronunciation-spelling", "proper-noun", "proximal", "reciprocal", "reduplication", "reflexive", "relative", "romanization", "second-person", "sequence", "singular", "singular-only", "stative", "strict-sense", "subjective", "subjunctive", "substantive", "superlative", "third-person", "time", "transitive", "TRANSLINGUAL", "uncountable", "universal", "uppercase", "variant", "verb", "vocative", "with-infinitive"}
 
 for headword in headwords:
     for sense in headwords[headword]:

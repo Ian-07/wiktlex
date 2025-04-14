@@ -246,6 +246,9 @@ def edit():
                         if color == "purple" and sense["pos"] == "name":
                             color_found = True
 
+                        if color == "pink" and "TRANSLINGUAL" in sense["tags"]:
+                            color_found = True
+
                         if color in ["gray", "grey"] and "AUTOGEN" in sense["tags"]:
                             color_found = True
 
