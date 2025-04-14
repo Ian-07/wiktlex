@@ -308,6 +308,10 @@ def expand_alts(headword):
                                         if alt_sense["pos"] in ["adj", "adv"] and has_er_est_form(alt_sense["forms"]):
                                             sense_copy["tags"].append("ALLOW ADJ AUTOGEN")
 
+                                        for tag in ["vulgar", "derogatory", "offensive", "slur"]:
+                                            if tag in alt_sense["tags"] and tag not in sense_copy["tags"]:
+                                                sense_copy["tags"].append(tag)
+
                                         # if A is an alt of B which is an alt of C, set A's parent to C (if C is alpha)
                                         # this is so that the list of alternate forms in C's definition is more complete
                                         if "alt" in alt_sense and unidecode(alt_sense["alt"]).isalpha():
