@@ -231,6 +231,19 @@ alt_patterns = [r"Abbreviation of (.*?)\.?$", r"abstract noun of (.*?)\.?$", r"A
 headwords_started = {}
 headwords_expanded = {}
 
+# returns whether inputted list has adjective/adverb forms ending in -er or -est
+def has_er_est_form(l):
+    er_est_found = False
+
+    for adj_form in l:
+        adj_form_unidecoded = unidecode(adj_form).upper()
+
+        if adj_form_unidecoded.isalpha() and len(adj_form_unidecoded) >= 3 and (
+                adj_form_unidecoded[-2:] == "ER" or adj_form_unidecoded[-3:] == "EST"):
+            er_est_found = True
+
+    return er_est_found
+
 def expand_alts(headword):
     # prevents infinite recursion
     headwords_started[headword] = True
@@ -276,13 +289,17 @@ def expand_alts(headword):
                                         if (alt_sense["pos"] == "noun" or alt_sense["pos"] == "name") and ("uncountable" not in alt_sense["tags"] or "countable" in alt_sense["tags"] or "usually" in alt_sense["tags"]) and "countable" not in sense_copy["tags"] and "uncountable" in sense_copy["tags"]:
                                             sense_copy["tags"].remove("uncountable")
 
-                                        if (alt_sense["pos"] == "adj" and "not-comparable" in alt_sense["tags"] and "comparable" not in alt_sense["tags"]) and "usually" not in alt_sense["tags"] and ("not-comparable" not in sense_copy["tags"] or "comparable" in sense_copy["tags"]):
+                                        if (alt_sense["pos"] in ["adj", "adv"] and "not-comparable" in alt_sense["tags"] and "comparable" not in alt_sense["tags"]) and "usually" not in alt_sense["tags"] and ("not-comparable" not in sense_copy["tags"] or "comparable" in sense_copy["tags"]):
                                             sense_copy["tags"].append("not-comparable")
 
                                             if "comparable" in sense_copy["tags"]:
                                                 sense_copy["tags"].remove("comparable")
 
                                             sense_copy["forms"] = []
+
+                                        # look for adj/adv forms which are single words ending in -er or -est
+                                        if alt_sense["pos"] in ["adj", "adv"] and has_er_est_form(alt_sense["forms"]):
+                                            sense_copy["tags"].append("ALLOW ADJ AUTOGEN")
 
                                         sense_copies.append(sense_copy)
 
@@ -422,10 +439,39 @@ for headword in headwords:
             sense_copy["tags"].append("AUTOGEN")
             headwords[headword].append(sense_copy)
 
+        if "ALLOW ADJ AUTOGEN" in sense["tags"] and not has_er_est_form(sense["forms"]) and "form-of" not in sense["tags"]:
+            er = None
+            est = None
+
+            if headword[-1] == "Y" and len(headword) >= 2 and headword[-2:] == "EY":
+                er = headword[:-2] + "IER"
+                est = headword[:-2] + "IEST"
+            elif headword[-1] == "Y" and len(headword) >= 2 and headword[-2] not in "AEIOUY":
+                er = headword[:-1] + "IER"
+                est = headword[:-1] + "IEST"
+            elif headword[-1] == "E":
+                er = headword + "R"
+                est = headword + "ST"
+            elif len(headword) >= 2 and headword[-1] in "BCDFGKLMNPRSTV" and headword[-2] in "AEIOUY" and headword[-1] != headword[-2] and (len(headword) == 2 or headword[-2] != headword[-3]):
+                er = headword + headword[-1] + "ER"
+                est = headword + headword[-1] + "EST"
+            else:
+                er = headword + "ER"
+                est = headword + "EST"
+            '''elif headword[-1] in "JXZ" or headword[-2:] in ["SH", "ZH"] or headword[-3:] in ["NCH", "SCH", "TCH"] or headword[-4:] in ["EACH", "EECH", "OACH", "OUCH"]:
+                er = headword + "ER"
+                est = headword + "EST"'''
+
+            sense_copy = copy.deepcopy(sense)
+            sense_copy["forms"].append(er)
+            sense_copy["forms"].append(est)
+            sense_copy["tags"].append("AUTOGEN")
+            headwords[headword].append(sense_copy)
+
 print("Done.")
 print("Rendering senses...")
 
-excluded_tags = {"abbreviation", "acronym", "adjective", "adverb", "adverbial", "agent", "alt-of", "alternative", "Anglicised", "anterior", "apocopic", "aspect", "attributive", "AUTOGEN", "auxiliary", "capitalized", "catenative", "causative", "character", "clipping", "comparable", "comparative", "comparative-only", "conjunctive", "contracted", "copulative", "countable", "dative", "defective", "definite", "definition", "deliberate", "demonstrative", "degree", "demonym", "determiner", "direct", "distal", "ditransitive", "duration", "ellipsis", "empty-gloss", "ergative", "error-lua-exec", "error-misspelling", "familiar", "feminine", "first-person", "focus", "form-of", "frequency", "g-person", "genitive", "gerund", "hard", "heading", "imperative-only", "imperfect", "impersonal", "in-compounds", "in-plural", "indeclinable", "indefinite", "indicative", "indirect", "initialism", "intensifier", "interrogative", "intransitive", "invariable", "irregular", "letter", "location", "lowercase", "manner", "masculine", "medial", "misconstruction", "misspelling", "modal", "morpheme", "negative", "neologism", "neuter", "no-gloss", "no-past-participle", "no-plural", "no-present-participle", "nominative", "not countable", "not-comparable", "noun-from-verb", "objective", "oblique", "participle", "passive", "perfect", "perfective", "personal", "phoneme", "phrase", "place", "plural", "plural-normally", "plural-only", "positive", "possessive", "predicative", "present", "pronoun", "pronunciation-spelling", "proper-noun", "proximal", "reciprocal", "reduplication", "reflexive", "relative", "romanization", "second-person", "sequence", "singular", "singular-only", "stative", "strict-sense", "subjective", "subjunctive", "substantive", "superlative", "third-person", "time", "transitive", "uncountable", "universal", "uppercase", "variant", "verb", "vocative", "with-infinitive"}
+excluded_tags = {"abbreviation", "acronym", "adjective", "adverb", "adverbial", "agent", "ALLOW ADJ AUTOGEN", "alt-of", "alternative", "Anglicised", "anterior", "apocopic", "aspect", "attributive", "AUTOGEN", "auxiliary", "capitalized", "catenative", "causative", "character", "clipping", "comparable", "comparative", "comparative-only", "conjunctive", "contracted", "copulative", "countable", "dative", "defective", "definite", "definition", "deliberate", "demonstrative", "degree", "demonym", "determiner", "direct", "distal", "ditransitive", "duration", "ellipsis", "empty-gloss", "ergative", "error-lua-exec", "error-misspelling", "familiar", "feminine", "first-person", "focus", "form-of", "frequency", "g-person", "genitive", "gerund", "hard", "heading", "imperative-only", "imperfect", "impersonal", "in-compounds", "in-plural", "indeclinable", "indefinite", "indicative", "indirect", "initialism", "intensifier", "interrogative", "intransitive", "invariable", "irregular", "letter", "location", "lowercase", "manner", "masculine", "medial", "misconstruction", "misspelling", "modal", "morpheme", "negative", "neologism", "neuter", "no-gloss", "no-past-participle", "no-plural", "no-present-participle", "nominative", "not countable", "not-comparable", "noun-from-verb", "objective", "oblique", "participle", "passive", "perfect", "perfective", "personal", "phoneme", "phrase", "place", "plural", "plural-normally", "plural-only", "positive", "possessive", "predicative", "present", "pronoun", "pronunciation-spelling", "proper-noun", "proximal", "reciprocal", "reduplication", "reflexive", "relative", "romanization", "second-person", "sequence", "singular", "singular-only", "stative", "strict-sense", "subjective", "subjunctive", "substantive", "superlative", "third-person", "time", "transitive", "uncountable", "universal", "uppercase", "variant", "verb", "vocative", "with-infinitive"}
 
 for headword in headwords:
     for sense in headwords[headword]:
