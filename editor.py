@@ -237,7 +237,7 @@ def edit():
                         if color == "green" and "alt" in sense:
                             color_found = True
 
-                        if color == "yellow" and ("misspelling" in def_lower or "eggcorn" in def_lower or "obsolete typography" in def_lower):
+                        if color == "yellow" and ("misspelling" in def_lower or "misconstruction" in def_lower or "eggcorn" in def_lower or "obsolete typography" in def_lower):
                             color_found = True
 
                         if color == "blue" and ("abbreviation" in def_lower or "acronym" in def_lower or "initialism" in def_lower):
