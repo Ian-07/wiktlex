@@ -643,6 +643,8 @@ excluded_tags = {
     "character",
     "chiefly as past participle",
     "chiefly attributive",
+    "chiefly attributive or in the plural",
+    "chiefly attributively",
     "chiefly countable",
     "chiefly in past participle form",
     "chiefly in the plural",
@@ -750,6 +752,7 @@ excluded_tags = {
     "objective",
     "oblique",
     "often attributive",
+    "often attributively",
     "often in the plural",
     "often passive voice or reflexive",
     "often used attributively",
@@ -849,8 +852,8 @@ for headword in headwords:
         # remove duplicate tags
         tags_to_include = list(dict.fromkeys(tags_to_include))
 
-        # if visible tags list contains ONLY "also", "often", "sometimes", or "usually" on their own, make them invisible
-        if tags_to_include in [["also"], ["often"], ["sometimes"], ["usually"]]:
+        # if visible tags list contains ONLY one of these tigs on its own, make it invisible
+        if tags_to_include in [["also"], ["especially"], ["often"], ["sometimes"], ["specifically"], ["usually"]]:
             tags_to_include = []
 
         if len(tags_to_include) >= 1:
