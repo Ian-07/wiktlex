@@ -207,7 +207,7 @@ for entry in entries:
                             sense_data["tags"].append("TRANSLINGUAL")
 
                         # if a specific sense is marked as uncountable or not-comparable (and not merely "usually uncountable" or "countable and uncountable"), remove all inflections.
-                        if (((entry["pos"] == "noun" or entry["pos"] == "name") and "uncountable" in sense_data["tags"] and "countable" not in sense_data["tags"]) or (entry["pos"] == "adj" and "not-comparable" in sense_data["tags"] and "comparable" not in sense_data["tags"])) and "usually" not in sense_data["tags"]:
+                        if (((entry["pos"] == "noun" or entry["pos"] == "name") and ("uncountable" in sense_data["tags"] or "singular-only" in sense_data["tags"]) and "countable" not in sense_data["tags"]) or (entry["pos"] == "adj" and "not-comparable" in sense_data["tags"] and "comparable" not in sense_data["tags"])) and "usually" not in sense_data["tags"]:
                             sense_data["forms"] = []
 
                         # to prevent duplication of identical inflected forms (e.g. past and past participle for a verb)
@@ -523,7 +523,7 @@ for headword in headwords:
     # any entries that use {{head|en|noun}} or {{head|en|verb}} directly and thus don't list inflections
     for sense in headwords[headword]:
         # please forgive me for this monstrosity
-        if sense["pos"] in ["noun", "num"] and len(sense["forms"]) == 0 and (("countable" not in sense["tags"] and "uncountable" not in sense["tags"] and "form-of" not in sense["tags"] and "plural" not in sense["tags"]) or "no-plural" in sense["tags"]) and "plural" not in sense["gloss"]:
+        if sense["pos"] in ["noun", "num"] and len(sense["forms"]) == 0 and (("countable" not in sense["tags"] and "uncountable" not in sense["tags"] and "singular-only" not in sense["tags"] and "form-of" not in sense["tags"] and "plural" not in sense["tags"]) or "no-plural" in sense["tags"]) and "plural" not in sense["gloss"]:
             if headword[-1] == "Y" and len(headword) >= 2 and headword[-2] not in "AEIOUY":
                 plural = headword[:-1] + "IES"
             elif headword[-3:] == "SIS":
