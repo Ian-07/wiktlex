@@ -368,16 +368,20 @@ headwords_expanded = {}
 
 # returns whether inputted list has adjective/adverb forms ending in -er or -est
 def has_er_est_form(l):
-    er_est_found = False
+    er_found = False
+    est_found = False
 
     for adj_form in l:
         adj_form_unidecoded = unidecode(adj_form).upper()
 
-        if adj_form_unidecoded.isalpha() and len(adj_form_unidecoded) >= 3 and (
-                adj_form_unidecoded[-2:] == "ER" or adj_form_unidecoded[-3:] == "EST"):
-            er_est_found = True
+        if adj_form_unidecoded.isalpha() and len(adj_form_unidecoded) >= 3:
+            if adj_form_unidecoded[-2:] == "ER":
+                er_found = True
 
-    return er_est_found
+            if adj_form_unidecoded[-3:] == "EST":
+                est_found = True
+
+    return er_found, est_found
 
 def expand_alts(headword):
     # prevents infinite recursion
@@ -435,7 +439,7 @@ def expand_alts(headword):
                                                 sense_copy["forms"] = []
 
                                             # look for adj/adv forms which are single words ending in -er or -est
-                                            if alt_sense["pos"] in ["adj", "adv"] and has_er_est_form(alt_sense["forms"]):
+                                            if alt_sense["pos"] in ["adj", "adv"] and has_er_est_form(alt_sense["forms"]) == (True, True):
                                                 sense_copy["tags"].append("ALLOW ADJ AUTOGEN")
 
                                             for tag in ["vulgar", "derogatory", "offensive", "slur"]:
@@ -585,7 +589,7 @@ for headword in headwords:
             sense_copy["tags"].append("AUTOGEN")
             headwords[headword].append(sense_copy)
 
-        if "ALLOW ADJ AUTOGEN" in sense["tags"] and not has_er_est_form(sense["forms"]) and "form-of" not in sense["tags"]:
+        if ("ALLOW ADJ AUTOGEN" in sense["tags"] or (sense["pos"] == "adj" and has_er_est_form(sense["forms"]) != (False, False))) and has_er_est_form(sense["forms"]) != (True, True) and "form-of" not in sense["tags"]:
             er = None
             est = None
 
