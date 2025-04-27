@@ -395,62 +395,64 @@ def expand_alts(headword):
 
                     if match2 is not None:
                         alt = match2.group(1)
-                        sense["alt"] = alt
 
-                        alt_headword = unidecode(sense["alt"]).upper()
+                        if alt not in ["Saint", "St"]:
+                            sense["alt"] = alt
 
-                        parent_sense_found = False
+                            alt_headword = unidecode(sense["alt"]).upper()
 
-                        if alt_headword != headword:
-                            # find all senses with matching capitalization as well as matching part of speech
-                            if alt_headword in headwords:
-                                if alt_headword not in headwords_started:
-                                    expand_alts(alt_headword)
+                            parent_sense_found = False
 
-                                for alt_sense in headwords[alt_headword]:
-                                    if alt_sense["word"] == sense["alt"] and get_pos_abbr(alt_sense["pos"]) == get_pos_abbr(sense["pos"]):
-                                        sense_copy = copy.deepcopy(sense)
-                                        sense_copy["gloss"] = sense["gloss"].replace(match.group(1), match2.group(1) + " (" + alt_sense["gloss"] + ")")
+                            if alt_headword != headword:
+                                # find all senses with matching capitalization as well as matching part of speech
+                                if alt_headword in headwords:
+                                    if alt_headword not in headwords_started:
+                                        expand_alts(alt_headword)
 
-                                        # keep countability/comparability consistent between parent and child
-                                        if (alt_sense["pos"] == "noun" or alt_sense["pos"] == "name") and ("uncountable" in alt_sense["tags"] or "plural" in alt_sense["tags"] or "plural-only" in alt_sense["tags"]) and "countable" not in alt_sense["tags"] and "usually" not in alt_sense["tags"] and ("uncountable" not in sense_copy["tags"] or "countable" in sense_copy["tags"]):
-                                            sense_copy["tags"].append("uncountable")
+                                    for alt_sense in headwords[alt_headword]:
+                                        if alt_sense["word"] == sense["alt"] and get_pos_abbr(alt_sense["pos"]) == get_pos_abbr(sense["pos"]):
+                                            sense_copy = copy.deepcopy(sense)
+                                            sense_copy["gloss"] = sense["gloss"].replace(match.group(1), match2.group(1) + " (" + alt_sense["gloss"] + ")")
 
-                                            if "countable" in sense_copy["tags"]:
-                                                sense_copy["tags"].remove("countable")
+                                            # keep countability/comparability consistent between parent and child
+                                            if (alt_sense["pos"] == "noun" or alt_sense["pos"] == "name") and ("uncountable" in alt_sense["tags"] or "plural" in alt_sense["tags"] or "plural-only" in alt_sense["tags"]) and "countable" not in alt_sense["tags"] and "usually" not in alt_sense["tags"] and ("uncountable" not in sense_copy["tags"] or "countable" in sense_copy["tags"]):
+                                                sense_copy["tags"].append("uncountable")
 
-                                            sense_copy["forms"] = []
+                                                if "countable" in sense_copy["tags"]:
+                                                    sense_copy["tags"].remove("countable")
 
-                                        if (alt_sense["pos"] == "noun" or alt_sense["pos"] == "name") and (("uncountable" not in alt_sense["tags"] and "plural" not in alt_sense["tags"] and "plural-only" not in alt_sense["tags"]) or "countable" in alt_sense["tags"] or "usually" in alt_sense["tags"]) and "countable" not in sense_copy["tags"] and "uncountable" in sense_copy["tags"]:
-                                            sense_copy["tags"].remove("uncountable")
+                                                sense_copy["forms"] = []
 
-                                        if (alt_sense["pos"] in ["adj", "adv"] and "not-comparable" in alt_sense["tags"] and "comparable" not in alt_sense["tags"]) and "usually" not in alt_sense["tags"] and ("not-comparable" not in sense_copy["tags"] or "comparable" in sense_copy["tags"]):
-                                            sense_copy["tags"].append("not-comparable")
+                                            if (alt_sense["pos"] == "noun" or alt_sense["pos"] == "name") and (("uncountable" not in alt_sense["tags"] and "plural" not in alt_sense["tags"] and "plural-only" not in alt_sense["tags"]) or "countable" in alt_sense["tags"] or "usually" in alt_sense["tags"]) and "countable" not in sense_copy["tags"] and "uncountable" in sense_copy["tags"]:
+                                                sense_copy["tags"].remove("uncountable")
 
-                                            if "comparable" in sense_copy["tags"]:
-                                                sense_copy["tags"].remove("comparable")
+                                            if (alt_sense["pos"] in ["adj", "adv"] and "not-comparable" in alt_sense["tags"] and "comparable" not in alt_sense["tags"]) and "usually" not in alt_sense["tags"] and ("not-comparable" not in sense_copy["tags"] or "comparable" in sense_copy["tags"]):
+                                                sense_copy["tags"].append("not-comparable")
 
-                                            sense_copy["forms"] = []
+                                                if "comparable" in sense_copy["tags"]:
+                                                    sense_copy["tags"].remove("comparable")
 
-                                        # look for adj/adv forms which are single words ending in -er or -est
-                                        if alt_sense["pos"] in ["adj", "adv"] and has_er_est_form(alt_sense["forms"]):
-                                            sense_copy["tags"].append("ALLOW ADJ AUTOGEN")
+                                                sense_copy["forms"] = []
 
-                                        for tag in ["vulgar", "derogatory", "offensive", "slur"]:
-                                            if tag in alt_sense["tags"] and tag not in sense_copy["tags"]:
-                                                sense_copy["tags"].append(tag)
+                                            # look for adj/adv forms which are single words ending in -er or -est
+                                            if alt_sense["pos"] in ["adj", "adv"] and has_er_est_form(alt_sense["forms"]):
+                                                sense_copy["tags"].append("ALLOW ADJ AUTOGEN")
 
-                                        # if A is an alt of B which is an alt of C, set A's parent to C (if C is alpha)
-                                        # this is so that the list of alternate forms in C's definition is more complete
-                                        if "alt" in alt_sense and unidecode(alt_sense["alt"]).isalpha():
-                                            sense_copy["alt"] = alt_sense["alt"]
+                                            for tag in ["vulgar", "derogatory", "offensive", "slur"]:
+                                                if tag in alt_sense["tags"] and tag not in sense_copy["tags"]:
+                                                    sense_copy["tags"].append(tag)
 
-                                        sense_copies.append(sense_copy)
+                                            # if A is an alt of B which is an alt of C, set A's parent to C (if C is alpha)
+                                            # this is so that the list of alternate forms in C's definition is more complete
+                                            if "alt" in alt_sense and unidecode(alt_sense["alt"]).isalpha():
+                                                sense_copy["alt"] = alt_sense["alt"]
 
-                                        parent_sense_found = True
+                                            sense_copies.append(sense_copy)
 
-                        if run_bonus_scripts and not parent_sense_found and headword.isalpha() and alt_headword.isalpha() and headword != alt_headword:
-                            orphans_lines.append(f"{headword} (parent {alt_headword})\n")
+                                            parent_sense_found = True
+
+                            if run_bonus_scripts and not parent_sense_found and headword.isalpha() and alt_headword.isalpha() and headword != alt_headword:
+                                orphans_lines.append(f"{headword} (parent {alt_headword})\n")
 
         for sense_copy in sense_copies:
             headwords[headword].append(sense_copy)
