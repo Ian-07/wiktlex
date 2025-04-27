@@ -872,7 +872,7 @@ for headword in headwords:
 
                 # don't add tag to definition text if it's a substring of another tag
                 for other_tag in tags_to_include:
-                    if tag != other_tag and tag in other_tag:
+                    if tag != other_tag and (tag.lower() in other_tag.lower() or (tag == "figuratively" and "figurative" in other_tag)):
                         superstring_found = True
 
                 if not superstring_found:
