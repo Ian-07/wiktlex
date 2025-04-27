@@ -529,7 +529,7 @@ for headword in headwords:
     # any entries that use {{head|en|noun}} or {{head|en|verb}} directly and thus don't list inflections
     for sense in headwords[headword]:
         # please forgive me for this monstrosity
-        if sense["pos"] in ["noun", "num"] and len(sense["forms"]) == 0 and (("countable" not in sense["tags"] and "uncountable" not in sense["tags"] and "singular-only" not in sense["tags"] and "form-of" not in sense["tags"] and "plural" not in sense["tags"]) or "no-plural" in sense["tags"]) and "plural" not in sense["gloss"]:
+        if sense["pos"] in ["noun", "num"] and len(sense["forms"]) == 0 and ("countable" in sense["tags"] or (("uncountable" not in sense["tags"] and "singular-only" not in sense["tags"] and "form-of" not in sense["tags"] and "plural" not in sense["tags"]) or "no-plural" in sense["tags"]) and "plural" not in sense["gloss"]):
             if headword[-1] == "Y" and len(headword) >= 2 and headword[-2] not in "AEIOUY":
                 plural = headword[:-1] + "IES"
             elif headword[-3:] == "SIS":
