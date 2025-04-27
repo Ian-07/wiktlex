@@ -413,7 +413,7 @@ def expand_alts(headword):
                                         sense_copy["gloss"] = sense["gloss"].replace(match.group(1), match2.group(1) + " (" + alt_sense["gloss"] + ")")
 
                                         # keep countability/comparability consistent between parent and child
-                                        if (alt_sense["pos"] == "noun" or alt_sense["pos"] == "name") and "uncountable" in alt_sense["tags"] and "countable" not in alt_sense["tags"] and "usually" not in alt_sense["tags"] and ("uncountable" not in sense_copy["tags"] or "countable" in sense_copy["tags"]):
+                                        if (alt_sense["pos"] == "noun" or alt_sense["pos"] == "name") and ("uncountable" in alt_sense["tags"] or "plural" in alt_sense["tags"] or "plural-only" in alt_sense["tags"]) and "countable" not in alt_sense["tags"] and "usually" not in alt_sense["tags"] and ("uncountable" not in sense_copy["tags"] or "countable" in sense_copy["tags"]):
                                             sense_copy["tags"].append("uncountable")
 
                                             if "countable" in sense_copy["tags"]:
@@ -421,7 +421,7 @@ def expand_alts(headword):
 
                                             sense_copy["forms"] = []
 
-                                        if (alt_sense["pos"] == "noun" or alt_sense["pos"] == "name") and ("uncountable" not in alt_sense["tags"] or "countable" in alt_sense["tags"] or "usually" in alt_sense["tags"]) and "countable" not in sense_copy["tags"] and "uncountable" in sense_copy["tags"]:
+                                        if (alt_sense["pos"] == "noun" or alt_sense["pos"] == "name") and (("uncountable" not in alt_sense["tags"] and "plural" not in alt_sense["tags"] and "plural-only" not in alt_sense["tags"]) or "countable" in alt_sense["tags"] or "usually" in alt_sense["tags"]) and "countable" not in sense_copy["tags"] and "uncountable" in sense_copy["tags"]:
                                             sense_copy["tags"].remove("uncountable")
 
                                         if (alt_sense["pos"] in ["adj", "adv"] and "not-comparable" in alt_sense["tags"] and "comparable" not in alt_sense["tags"]) and "usually" not in alt_sense["tags"] and ("not-comparable" not in sense_copy["tags"] or "comparable" in sense_copy["tags"]):
