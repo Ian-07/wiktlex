@@ -530,11 +530,21 @@ for headword in headwords:
     for sense in headwords[headword]:
         # please forgive me for this monstrosity
         if sense["pos"] in ["noun", "num"] and len(sense["forms"]) == 0 and ("countable" in sense["tags"] or (("uncountable" not in sense["tags"] and "singular-only" not in sense["tags"] and "form-of" not in sense["tags"] and "plural" not in sense["tags"]) or "no-plural" in sense["tags"]) and "plural" not in sense["gloss"]):
-            if headword[-1] == "Y" and len(headword) >= 2 and headword[-2] not in "AEIOUY":
+            if len(headword) >= 3 and headword[-3:] == "MAN" and headword not in ["FLEHMAN", "IMMELMAN", "KUNSTLEROMAN", "LYERMAN", "ROMAN", "YALMAN", "YELMAN", "ZAMAN"]:
+                plural = headword[:-3] + "MEN"
+            elif len(headword) >= 4 and headword[-4:] == "FOOT" and headword not in ["ICEFOOT", "SALTFOOT", "SOWFOOT", "SWIFTFOOT"]:
+                plural = headword[:-3] + "EET"
+            elif len(headword) >= 4 and headword[-4:] == "LOAF":
+                plural = headword[:-1] + "VES"
+            elif len(headword) >= 5 and headword[-5:] == "TOOTH":
+                plural = headword[:-4] + "EETH"
+            elif len(headword) >= 6 and headword[-6:] == "PERSON":
+                plural = headword[:-4] + "OPLE"
+            elif headword[-1] == "Y" and len(headword) >= 2 and headword[-2] not in "AEIOUY":
                 plural = headword[:-1] + "IES"
-            elif headword[-3:] == "SIS":
+            elif headword[-3:] == "SIS" or (len(headword) >= 6 and headword[-3:] == "XIS"):
                 plural = headword[:-2] + "ES"
-            elif headword[-1] in "JSXZ" or headword[-2:] in ["SH", "ZH"] or headword[-3:] in ["NCH", "SCH", "TCH"] or headword[-4:] in ["EACH", "EECH", "OACH", "OUCH"]:
+            elif ((headword[-1] in "JSXZ" and (len(headword) < 3 or headword[-3:] != "OUX")) or headword[-2:] in ["SH", "ZH"] or headword[-3:] in ["NCH", "SCH", "TCH"] or headword[-4:] in ["EACH", "EECH", "OACH", "OOCH", "OUCH"]) or headword in ["ARCSECH", "ARRACACH", "ARRACH", "ARSECH", "CESAREVICH", "KNOLYCH", "KNOWLECH", "KNOWLYCH", "MAIZESTARCH", "SANDWHICH", "SPINNACH", "TUCH"]:
                 plural = headword + "ES"
             else:
                 plural = headword + "S"
@@ -553,7 +563,7 @@ for headword in headwords:
                 s = headword[:-1] + "IES"
                 ing = headword + "ING"
                 ed = headword[:-1] + "IED"
-            elif headword[-1] == "E":
+            elif headword[-1] == "E" and sense["word"][-1] != "é":
                 ed = headword + "D"
                 s = headword + "S"
 
@@ -561,7 +571,7 @@ for headword in headwords:
                     ing = headword[:-1] + "ING"
                 else:
                     ing = headword + "ING"
-            elif len(headword) >= 2 and headword[-1] in "BCDFGKLMNPRSTV" and headword[-2] in "AEIOUY" and headword[-1] != headword[-2] and (len(headword) == 2 or headword[-2] != headword[-3]):
+            elif len(headword) >= 2 and headword[-1] in "BCDFGKLMNPRSTV" and headword[-2] in "AEIOUY" and headword[-1] != headword[-2] and headword[-2:] not in ["EN"] and (len(headword) == 2 or (headword[-2] != headword[-3] and headword[-3] not in "AEIOU")) and (len(headword) < 4 or headword[-2:] not in ["ER"]) and headword not in ["COMISERAT", "DIAGNOSIS", "LYK", "MANET", "TACET"]:
                 if headword[-1] == "S":
                     s = headword + "SES"
                 else:
@@ -569,7 +579,7 @@ for headword in headwords:
 
                 ing = headword + headword[-1] + "ING"
                 ed = headword + headword[-1] + "ED"
-            elif headword[-1] in "JXZ" or headword[-2:] in ["SH", "ZH"] or headword[-3:] in ["NCH", "SCH", "TCH"] or headword[-4:] in ["EACH", "EECH", "OACH", "OUCH"]:
+            elif headword[-1] in "JXZ" or headword[-2:] in ["SH", "ZH"] or headword[-3:] in ["NCH", "SCH", "TCH"] or headword[-4:] in ["EACH", "EECH", "OACH", "OOCH", "OUCH"]:
                 s = headword + "ES"
                 ing = headword + "ING"
                 ed = headword + "ED"
@@ -593,16 +603,19 @@ for headword in headwords:
             er = None
             est = None
 
-            if headword[-1] == "Y" and len(headword) >= 2 and headword[-2:] == "EY":
+            if "alt" in sense and sense["alt"] == "far":
+                er = headword + "THER"
+                est = headword + "THEST"
+            elif headword[-1] == "Y" and len(headword) >= 2 and headword[-2:] == "EY" and (len(headword) < 3 or headword[-3] != "I"):
                 er = headword[:-2] + "IER"
                 est = headword[:-2] + "IEST"
             elif headword[-1] == "Y" and len(headword) >= 2 and headword[-2] not in "AEIOUY":
                 er = headword[:-1] + "IER"
                 est = headword[:-1] + "IEST"
-            elif headword[-1] == "E":
+            elif headword[-1] == "E" and sense["word"][-1] != "é":
                 er = headword + "R"
                 est = headword + "ST"
-            elif len(headword) >= 2 and headword[-1] in "BCDFGKLMNPRSTV" and headword[-2] in "AEIOUY" and headword[-1] != headword[-2] and (len(headword) == 2 or headword[-2] != headword[-3]):
+            elif len(headword) >= 2 and headword[-1] in "BCDFGKLMNPRSTV" and (len(headword) < 4 or headword[-2:] not in ["AL", "AN", "EN", "ER", "IC", "ID", "IN", "ON"]) and (len(headword) < 3 or headword[-3:] not in ["AYN", "EAT", "LES", "LUT", "OUS"]) and (len(headword) < 5 or headword[-2:] != "ED") and headword[-2] in "AEIOUY" and (len(headword) < 3 or headword[-3] not in "AEIOU" or headword == "BAAAD") and headword[-1] != headword[-2] and (len(headword) == 2 or headword[-2] != headword[-3] or headword == "BAAAD") and headword not in ["BUCKSOM", "EEEVIL", "HOLESOM", "NICKEL", "NOBEL", "OL", "SUBTIL", "YALLAR"]:
                 er = headword + headword[-1] + "ER"
                 est = headword + headword[-1] + "EST"
             else:
