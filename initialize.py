@@ -326,6 +326,7 @@ alt_patterns = [
     r"(deprecated template usage) passive of (.*?)\.?$",
     r"passive participle of (.*?)\.?$",
     r"of the past participle of (.*?)\.?$",
+    r"past of (.*?)\.?$",
     r"past participle of (.*?)\.?$",
     r"Pejorative of (.*?)\.?$",
     r"perfective form of (.*?)\.?$",
