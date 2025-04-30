@@ -680,6 +680,7 @@ excluded_tags = {
     "comparative-only",
     "conjunctive",
     "contracted",
+    "contraction",
     "copulative",
     "countable",
     "countable and uncountable",
