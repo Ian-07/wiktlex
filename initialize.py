@@ -773,6 +773,7 @@ excluded_tags = {
     "not comparable",
     "not-comparable",
     "noun-from-verb",
+    "now only in plural",
     "now usually in the plural",
     "objective",
     "oblique",
