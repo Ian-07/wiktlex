@@ -815,6 +815,7 @@ excluded_tags = {
     "singular",
     "singular only",
     "singular-only",
+    "singular or in plural",
     "singular or plural",
     "singular or plural in construction",
     "sometimes attributive",
