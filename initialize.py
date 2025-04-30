@@ -733,6 +733,7 @@ excluded_tags = {
     "interrogative",
     "in singular or plural",
     "in the plural",
+    "in the superlative",
     "intransitive",
     "intransitive and transitive",
     "intransitive except in archaic usage",
