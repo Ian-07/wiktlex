@@ -821,6 +821,7 @@ excluded_tags = {
     "singular or plural",
     "singular or plural in construction",
     "sometimes attributive",
+    "sometimes intransitive",
     "sometimes reflexive",
     "sometimes transitive",
     "sometimes used attributively",
