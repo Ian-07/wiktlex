@@ -863,6 +863,7 @@ excluded_tags = {
     "usually in the plural",
     "usually intransitive",
     "usually not comparable",
+    "usually plural",
     "usually reflexive",
     "usually transitive",
     "usually uncountable",
