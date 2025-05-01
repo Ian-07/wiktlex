@@ -781,6 +781,7 @@ excluded_tags = {
     "often attributively",
     "often in the plural",
     "often passive voice or reflexive",
+    "often transitive",
     "often used attributively",
     "often used attributively to modify other nouns",
     "often used in the past participle",
