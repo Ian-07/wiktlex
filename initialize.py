@@ -673,6 +673,7 @@ excluded_tags = {
     "chiefly in past participle form",
     "chiefly in the plural",
     "chiefly in the superlative",
+    "chiefly not comparable",
     "chiefly transitive",
     "chiefly uncountable",
     "clipping",
