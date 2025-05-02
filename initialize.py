@@ -897,8 +897,9 @@ for headword in headwords:
                 superstring_found = False
 
                 # don't add tag to definition text if it's a substring of another tag
+                # usually case insensitive, though "UK" and "US" do require case sensitivity
                 for other_tag in tags_to_include:
-                    if tag != other_tag and (tag.lower() in other_tag.lower() or (tag == "figuratively" and "figurative" in other_tag and other_tag != "figurative")):
+                    if tag != other_tag and ((tag.lower() in other_tag.lower() and (tag not in ["UK", "US"] or tag in other_tag)) or (tag == "figuratively" and "figurative" in other_tag and other_tag != "figurative")):
                         superstring_found = True
 
                 if not superstring_found:
