@@ -547,7 +547,7 @@ for headword in headwords:
                 plural = headword[:-1] + "IES"
             elif headword[-3:] == "SIS" or (len(headword) >= 6 and headword[-3:] == "XIS"):
                 plural = headword[:-2] + "ES"
-            elif ((headword[-1] in "JSXZ" and (len(headword) < 3 or headword[-3:] != "OUX")) or headword[-2:] in ["SH", "ZH"] or headword[-3:] in ["NCH", "SCH", "TCH"] or headword[-4:] in ["EACH", "EECH", "OACH", "OOCH", "OUCH"]) or headword in ["ARCH", "ARCSECH", "ARRACACH", "ARRACH", "ARSECH", "CESAREVICH", "KNOLYCH", "KNOWLECH", "KNOWLYCH", "MAIZESTARCH", "SANDWHICH", "SPINNACH", "TUCH"]:
+            elif ((headword[-1] in "JSXZ" and (len(headword) < 3 or headword[-3:] != "OUX")) or headword[-2:] in ["SH", "ZH"] or headword[-3:] in ["NCH", "SCH", "TCH"] or headword[-4:] in ["EACH", "EECH", "OACH", "OOCH", "OUCH"]) or headword in ["ARCH", "ARCSECH", "ARRACACH", "ARRACH", "ARSECH", "CESAREVICH", "KNOLYCH", "KNOWLECH", "KNOWLYCH", "MAIZESTARCH", "SANDWHICH", "SPINNACH", "TUCH", "WICH"]:
                 plural = headword + "ES"
             else:
                 plural = headword + "S"
