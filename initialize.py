@@ -533,7 +533,7 @@ for headword in headwords:
     for sense in headwords[headword]:
         # please forgive me for this monstrosity
         if sense["pos"] in ["noun", "num"] and len(sense["forms"]) == 0 and ("countable" in sense["tags"] or (("uncountable" not in sense["tags"] and "singular-only" not in sense["tags"] and "form-of" not in sense["tags"] and "plural" not in sense["tags"]) or "no-plural" in sense["tags"]) and "plural" not in sense["gloss"]):
-            if len(headword) >= 3 and headword[-3:] == "MAN" and headword not in ["DISCMAN", "FLEHMAN", "IMMELMAN", "KUNSTLEROMAN", "LYERMAN", "ROMAN", "YALMAN", "YELMAN", "ZAMAN"]:
+            if len(headword) >= 3 and headword[-3:] == "MAN" and headword not in ["BIRMAN", "BRACHMAN", "BRAMAN", "DISCMAN", "FLEHMAN", "HESSEMAN", "IMMELMAN", "KERMAN", "KUMAN", "KUNSTLEROMAN", "KURMAN", "LYERMAN", "OSMAN", "OTHMAN", "ROMAN", "YALMAN", "YELMAN", "ZAMAN"]:
                 plural = headword[:-3] + "MEN"
             elif len(headword) >= 4 and headword[-4:] == "FOOT" and headword not in ["ICEFOOT", "SALTFOOT", "SOWFOOT", "SWIFTFOOT"]:
                 plural = headword[:-3] + "EET"
@@ -547,7 +547,7 @@ for headword in headwords:
                 plural = headword[:-1] + "IES"
             elif headword[-3:] == "SIS" or (len(headword) >= 6 and headword[-3:] == "XIS"):
                 plural = headword[:-2] + "ES"
-            elif ((headword[-1] in "JSXZ" and (len(headword) < 3 or headword[-3:] != "OUX")) or headword[-2:] in ["SH", "ZH"] or headword[-3:] in ["NCH", "SCH", "TCH"] or headword[-4:] in ["EACH", "EECH", "OACH", "OOCH", "OUCH"]) or headword in ["ARCH", "ARCSECH", "ARRACACH", "ARRACH", "ARSECH", "BRAMAN", "CESAREVICH", "KNOLYCH", "KNOWLECH", "KNOWLYCH", "MAIZESTARCH", "SANDWHICH", "SPINNACH", "TUCH"]:
+            elif ((headword[-1] in "JSXZ" and (len(headword) < 3 or headword[-3:] != "OUX")) or headword[-2:] in ["SH", "ZH"] or headword[-3:] in ["NCH", "SCH", "TCH"] or headword[-4:] in ["EACH", "EECH", "OACH", "OOCH", "OUCH"]) or headword in ["ARCH", "ARCSECH", "ARRACACH", "ARRACH", "ARSECH", "CESAREVICH", "KNOLYCH", "KNOWLECH", "KNOWLYCH", "MAIZESTARCH", "SANDWHICH", "SPINNACH", "TUCH"]:
                 plural = headword + "ES"
             else:
                 plural = headword + "S"
