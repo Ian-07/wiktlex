@@ -887,8 +887,8 @@ for headword in headwords:
         # remove duplicate tags
         tags_to_include = list(dict.fromkeys(tags_to_include))
 
-        # if visible tags list contains ONLY one of these tigs on its own, make it invisible
-        if tags_to_include in [["also"], ["especially"], ["often"], ["sometimes"], ["specifically"], ["usually"]]:
+        # if visible tags list contains ONLY these tags, make them invisible
+        if set(tags_to_include) <= {"also", "especially", "often", "sometimes", "specifically", "usually"}:
             tags_to_include = []
 
         if len(tags_to_include) >= 1:
