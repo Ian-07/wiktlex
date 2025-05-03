@@ -254,7 +254,6 @@ alt_patterns = [
     r"Aphetic form of (.*?)\.?$",
     r"Apocopic form of (.*?)\.?$",
     r"Archaic form of (.*?)\.?$",
-    r"Archaic form of (.*?)\.?$",
     r"Archaic spelling of (.*?)\.?$",
     r"Aspirate mutation of (.*?)\.?$",
     r"attributive form of (.*?)\.?$",
