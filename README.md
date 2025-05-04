@@ -31,8 +31,9 @@ This relies on data originally extracted via Tatu Ylonen's [wiktextract](https:/
 5. Run finalize.py.
    * You'll be prompted to enter a name for the lexicon. If left blank, the name will just be "wordlist".
    * You'll also be prompted to enter the filename for a different lexicon (most likely a previous version of the same lexicon) to output a comparison between the two. If you do enter a filename, make sure it's for a plain wordlist that only contains a single word per line. However, you can leave this blank to skip this step.
-   * The final lexicon output consists of these three files:
+   * The final lexicon output consists of these four files:
       * `(wordlist name).txt`: Plain wordlist, one word per line.
+      * `(wordlist name)_2-15.txt`: Plain wordlist, restricted to words 2-15 letters long, one word per line.
       * `(wordlist name)_defs.txt`: Wordlist with definitions, one word/definition pair per line.
          * Unfortunately, Zyzzyva does not currently have proper handling for input lines beyond 640 characters in length, so I reluctantly decided to limit this to 629 characters.
       * `(wordlist name)_status.txt`: Stores the status of each sense. Make sure to hold on to this file if you plan on updating the lexicon based on new Wiktionary data later; see step 7 for how to do this.
@@ -42,9 +43,10 @@ This relies on data originally extracted via Tatu Ylonen's [wiktextract](https:/
 6. You *should* now be able to import either of the first two files into any program that can read them.
    * I emphasized "should" because all of the programs listed below have, in my experience, been quite finicky with custom wordlists, so I can't make any guarantees that they will work properly.
    * Definitions optional: [NASPA Zyzzyva](http://www.scrabbleplayers.org/w/NASPA_Zyzzyva_Download), [Collins Zyzzyva](https://scrabble.collinsdictionary.com/tools/), [Infiniwords](https://infiniwords.com/)
-      * **WARNING**: There is a possibility that importing `wordlist_defs.txt` into Zyzzyva may result in your computer bluescreening. `wordlist.txt` should work fine, though may result in Zyzzyva taking slightly longer to load.
-   * No definitions (use `wordlist.txt`): [Quackle](https://people.csail.mit.edu/jasonkb/quackle/)
+      * **WARNING**: There is a possibility that importing `(wordlist name)_defs.txt` into Zyzzyva may result in your computer bluescreening. `(wordlist name).txt` should work fine, though may result in Zyzzyva taking slightly longer to load.
+   * No definitions (use `(wordlist name)_2-15.txt`): [Quackle](https://people.csail.mit.edu/jasonkb/quackle/)
+     * Quackle unfortunately crashes when using the full wordlist, but works when only fed the words that are actually playable in standard *Scrabble*.
 7. To update the lexicon based on new data:
    * Perform steps 1-3 using a new version of `raw-wiktextract-data.jsonl`.
-   * Open `statuses.txt`, which is basically a working version of the final `wordlist_status.txt` in your favorite text editor. Go to the bottom of the file (make sure you're on an empty line), copy-paste everything from the previous `wordlist_status.txt`, and save.
+   * Open `statuses.txt`, which is basically a working version of the final `(wordlist name)_status.txt` in your favorite text editor. Go to the bottom of the file (make sure you're on an empty line), copy-paste everything from the previous `(wordlist name)_status.txt`, and save.
    * Any definitions which have been added or changed will need to be reassessed unless determined to be redundant. Any definitions which have been removed will no longer be included.

@@ -60,14 +60,19 @@ for headword in headwords:
                     add_alt(alt_headword, headword)
 
 print("Done.")
-print(f"Outputting to {wordlist_name}.txt, {wordlist_name}_defs.txt, and {wordlist_name}_status.txt...")
+print(f"Outputting to {wordlist_name}.txt, {wordlist_name}_2_15.txt, {wordlist_name}_defs.txt, and {wordlist_name}_status.txt...")
 
 wordlist = open(f"{wordlist_name}.txt", "w")
+wordlist_2_15 = open(f"{wordlist_name}_2-15.txt", "w")
 wordlist_defs = open(f"{wordlist_name}_defs.txt", "w", encoding="UTF-8")
 wordlist_status = open(f"{wordlist_name}_status.txt", "w")
 
 for word in sorted(list(words.keys())):
-    wordlist.write(word + "\n")
+    wordlist.write(f"{word}\n")
+
+    if 2 <= len(word) <= 15:
+        wordlist_2_15.write(f"{word}\n")
+
     # current zyzzyva limits input lines to 640 characters, and anything longer than this leads to some funky behavior
     # hopefully, a future version will increase this limit, or at least improve the handling of long definitions
     wordlist_defs.write(f"{word} {" / ".join(words[word])}{" - also " + ", ".join(sorted(alts[word])) if word in alts else ""}"[:629] + "\n")
@@ -77,6 +82,7 @@ for md5 in sorted(list(statuses.keys())):
     wordlist_status.write(f"{md5} {statuses[md5]}\n")
 
 wordlist.close()
+wordlist_2_15.close()
 wordlist_defs.close()
 wordlist_status.close()
 
