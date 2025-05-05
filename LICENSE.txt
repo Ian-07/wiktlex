@@ -1,6 +1,12 @@
+Final lexicon outputs (under https://github.com/Ian-07/wiktlex/releases) are
+licensed under CC-BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0/).
+See also https://en.wiktionary.org/wiki/Wiktionary:Copyrights.
+
+----
+
 MIT License
 
-Copyright (c) 2024 Ian07
+Copyright (c) 2024-2025 Ian07
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
