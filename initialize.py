@@ -175,7 +175,7 @@ for entry in entries:
 
                         if "forms" in entry.keys():
                             for form in entry["forms"]:
-                                if ("tags" not in form or ("abbreviation" not in form["tags"] and "alternative" not in form["tags"] and "symbol" not in form["tags"] and ("infinitive" not in form["tags"] or form["form"] != sense_data["word"]) and "no-infinitive" not in form["tags"])) and form["form"] != "glossary" and form["form"] != "no-table-tags" and (form["form"] not in ["more", "most"] or sense_data["word"] in ["many", "much"]) and (form["form"] not in ["farther", "farthest"] or sense_data["word"] == "far") and (sense_data["word"][-1] != "S" or form["form"][-1] != "s"):
+                                if ("tags" not in form or ("abbreviation" not in form["tags"] and "alternative" not in form["tags"] and "symbol" not in form["tags"] and ("infinitive" not in form["tags"] or form["form"] != sense_data["word"]) and "no-infinitive" not in form["tags"])) and form["form"] not in ["glossary", "dubious", "no-table-tags"] and (form["form"] not in ["more", "most"] or sense_data["word"] in ["many", "much"]) and (form["form"] not in ["farther", "farthest"] or sense_data["word"] == "far") and (sense_data["word"][-1] != "S" or form["form"][-1] != "s"):
                                     sense_data["forms"].append(form["form"])
 
                         if "qualifier" in sense.keys():
