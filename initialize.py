@@ -84,6 +84,24 @@ if run_bonus_scripts:
 
     print("Outputted hyphenated-only entries to bonus_hyphenated.txt.")
 
+    # twowords: generates a list of entries consisting of two lowercase words alphabetical words, separated by a space, where the concatenation of those two words does not have an entry
+    print("BONUS: finding two-word-only entries...")
+
+    twowords_out = open("bonus_twowords.txt", "w", encoding="UTF-8")
+    twowords_lines = []
+
+    for entry_word in entry_words:
+        words = entry_word.split(" ")
+        no_spaces = entry_word.replace(" ", "")
+
+        if len(words) == 2 and words[0].islower() and words[0].isalpha() and words[1].islower() and words[1].isalpha() and no_spaces not in entry_words.keys():
+            twowords_lines.append(f"{unidecode(no_spaces)} (\"{no_spaces}\" from \"{entry_word}\")\n")
+
+    for line in sorted(twowords_lines):
+        twowords_out.write(line)
+
+    print("Outputted two-word-only entries to bonus_twoword.txt.")
+
     # redlinks: generates a list of redlinks found within the raw wiktextract data, e.g. alternate forms that are listed but don't have actual entries yet
     print("BONUS: finding redlinks...")
 
