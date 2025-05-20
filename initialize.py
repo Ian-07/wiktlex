@@ -61,7 +61,7 @@ if run_bonus_scripts:
             if single_word not in entry_words.keys() and unidecode(single_word).isalpha():
                 multiword_lines.append(f"{unidecode(single_word).upper()} (\"{single_word}\" from \"{entry_word}\")\n")
 
-    for line in sorted(set(multiword_lines)):
+    for line in sorted(set(multiword_lines), key=lambda x: (len(x.split(" ")[0]), x)):
         multiword_out.write(line)
 
     print("Outputted multiword-only words to bonus_multiword.txt.")
@@ -79,7 +79,7 @@ if run_bonus_scripts:
         if entry_word[0] != "-" and entry_word[-1] != "-" and no_hyphens not in entry_words.keys() and unidecode(no_hyphens).isalpha():
             hyphenated_lines.append(f"{unidecode(no_hyphens).upper()} (\"{no_hyphens}\" from \"{entry_word}\")\n")
 
-    for line in sorted(set(hyphenated_lines)):
+    for line in sorted(set(hyphenated_lines), key=lambda x: (len(x.split(" ")[0]), x)):
         hyphenated_out.write(line)
 
     print("Outputted hyphenated-only entries to bonus_hyphenated.txt.")
@@ -97,7 +97,7 @@ if run_bonus_scripts:
         if len(words) == 2 and words[0].islower() and words[0].isalpha() and words[1].islower() and words[1].isalpha() and no_spaces not in entry_words.keys():
             twowords_lines.append(f"{unidecode(no_spaces).upper()} (\"{no_spaces}\" from \"{entry_word}\")\n")
 
-    for line in sorted(set(twowords_lines)):
+    for line in sorted(set(twowords_lines), key=lambda x: (len(x.split(" ")[0]), x)):
         twowords_out.write(line)
 
     print("Outputted two-word-only entries to bonus_twoword.txt.")
@@ -138,7 +138,7 @@ if run_bonus_scripts:
                             if linked_entry not in entry_words.keys() and unidecode(linked_entry).replace("-", "").isalpha():
                                 redlinks_lines.append(f"{unidecode(linked_entry).upper()} (\"{linked_entry}\" from \"{entry_word}\")\n")
 
-    for line in sorted(set(redlinks_lines)):
+    for line in sorted(set(redlinks_lines), key=lambda x: (len(x.split(" ")[0]), x)):
         redlinks_out.write(line)
 
     print("Outputted redlinks to bonus_redlinks.txt.")
@@ -494,7 +494,7 @@ for headword in headwords:
         print(f"Expanding alternative forms... ({n}/{len(headwords)} headwords done)")
 
 if run_bonus_scripts:
-    for line in sorted(set(orphans_lines)):
+    for line in sorted(set(orphans_lines), key=lambda x: (len(x.split(" ")[0]), x)):
         orphans_out.write(line)
 
     print("Outputted orphaned alternative forms to bonus_orphans.txt.")
