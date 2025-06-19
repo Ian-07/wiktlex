@@ -258,6 +258,7 @@ if run_bonus_scripts:
 
 # need to extract the word that each sense is an alternative form of
 alt_patterns = [
+    r"^([^\s]*?)\.?$",
     r"Abbreviation of (.*?)\.?$",
     r"abstract noun of (.*?)\.?$",
     r"Acronym of (.*?)\.?$",
@@ -420,6 +421,10 @@ def expand_alts(headword):
 
                     if match2 is not None:
                         alt = match2.group(1)
+
+                        # if gloss is a single capitalized word, use lower case version instead
+                        if pattern == r"^([^\s]*?)\.?$":
+                            alt = alt.lower()
 
                         if alt not in ["Saint", "St"]:
                             sense["alt"] = alt
