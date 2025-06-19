@@ -757,6 +757,7 @@ excluded_tags = {
     "initialism",
     "intensifier",
     "interrogative",
+    "in past participle form",
     "in singular or plural",
     "in the plural",
     "in the singular",
