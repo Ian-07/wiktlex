@@ -359,6 +359,7 @@ alt_patterns = [
     r"Romanization of (.*?)\.?$",
     r"Scribal abbreviation of (.*?)\.?$",
     r"second-person singular simple past indicative of (.*?)\.?$",
+    r"second-person singular simple present indicative of (.*?)\.?$",
     r"Short for (.*?)\.?$",
     r"simple past and past participle of (.*?)\.?$",
     r"simple past of (.*?)\.?$",
