@@ -444,21 +444,20 @@ def expand_alts(headword):
                                             sense_copy = deepcopy(sense)
                                             sense_copy["gloss"] = sense["gloss"].replace(match.group(1), match2.group(1) + " (" + alt_sense["gloss"] + ")")
 
-                                            if unidecode(headword).isalpha() and unidecode(alt_headword).isalpha():
-                                                sense_copy["alt inflections"] = []
+                                            sense_copy["alt inflections"] = []
 
-                                                for form in alt_sense["forms"]:
-                                                    form_unidecoded = unidecode(form).upper()
+                                            for form in alt_sense["forms"]:
+                                                form_unidecoded = unidecode(form).upper()
 
-                                                    i = 0
-                                                    while True:
-                                                        if i >= min(len(alt_headword), len(form_unidecoded)) or alt_headword[i] != form_unidecoded[i]:
-                                                            break
+                                                i = 0
+                                                while True:
+                                                    if i >= min(len(alt_headword), len(form_unidecoded)) or alt_headword[i] != form_unidecoded[i]:
+                                                        break
 
-                                                        i += 1
+                                                    i += 1
 
-                                                    if form_unidecoded.isalpha():
-                                                        sense_copy["alt inflections"].append(f"{alt_headword[i:]}/{form_unidecoded[i:]}")
+                                                if (alt_headword[i:].isalpha() or alt_headword[i:] == "") and (form_unidecoded[i:].isalpha() or form_unidecoded[i:] == ""):
+                                                    sense_copy["alt inflections"].append(f"{alt_headword[i:]}/{form_unidecoded[i:]}")
 
                                             # keep countability/comparability consistent between parent and child
                                             if (alt_sense["pos"] == "noun" or alt_sense["pos"] == "name") and ("uncountable" in alt_sense["tags"] or "plural-normally" in alt_sense["tags"] or "plural-only" in alt_sense["tags"] or ("plural" in alt_sense["tags"] and len(alt_sense["forms"]) == 0)) and "countable" not in alt_sense["tags"] and "usually" not in alt_sense["tags"] and ("uncountable" not in sense_copy["tags"] or "countable" in sense_copy["tags"]):
