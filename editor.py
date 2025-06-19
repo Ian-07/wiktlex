@@ -8,9 +8,9 @@ from unidecode import unidecode
 max_n = 1000
 uploaded_wordlists = {}
 
-print("Reading headwords.txt...")
+print("Reading headwords.json...")
 
-headwords = json.loads(open("headwords.txt", "r", encoding="UTF-8").read())
+headwords = json.loads(open("headwords.json", "r", encoding="UTF-8").read())
 
 min_headword_length = min([len(headword) for headword in headwords])
 max_headword_length = max([len(headword) for headword in headwords])

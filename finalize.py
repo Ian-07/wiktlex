@@ -8,9 +8,9 @@ old_wordlist_filename = input("OPTIONAL: enter full filename of old wordlist for
 if wordlist_name == '':
     wordlist_name = "wordlist"
 
-print("Reading headwords.txt...")
+print("Reading headwords.json...")
 
-headwords = json.loads(open("headwords.txt", "r", encoding="UTF-8").read())
+headwords = json.loads(open("headwords.json", "r", encoding="UTF-8").read())
 
 print("Done.")
 print("Reading statuses.txt...")

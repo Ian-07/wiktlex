@@ -5,7 +5,7 @@ import re
 import time
 from unidecode import unidecode
 
-print("WARNING: This script will overwrite headwords.txt and statuses.txt!")
+print("WARNING: This script will overwrite headwords.json and statuses.txt!")
 
 raw_filename = input("Enter filename for raw wiktextract data (leave blank for default 'raw-wiktextract-data.jsonl'): ")
 
@@ -146,7 +146,7 @@ if run_bonus_scripts:
 print("Extracting and organizing data from English/Translingual entries...")
 
 headwords = {}
-headwords_out = open("headwords.txt", "w", encoding="UTF-8")
+headwords_out = open("headwords.json", "w", encoding="UTF-8")
 statuses_out = open("statuses.txt", "w", encoding="UTF-8")
 
 pos_abbr = {
@@ -985,11 +985,11 @@ for headword in headwords:
             digests[digest] = sense
 
 print("Done.")
-print(f"Outputting {len(headwords)} headwords to headwords.txt...")
+print(f"Outputting {len(headwords)} headwords to headwords.json...")
 
 headwords_out.write(unidecode(json.dumps(headwords, indent=4) + "\n"))
 
-print("Data outputted to headwords.txt.")
+print("Data outputted to headwords.json.")
 print("Auto-assessing some senses...")
 
 auto_assessed = 0
