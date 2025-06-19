@@ -1,4 +1,4 @@
-import copy
+from copy import copy, deepcopy
 import hashlib
 import json
 import re
@@ -441,8 +441,24 @@ def expand_alts(headword):
 
                                     for alt_sense in headwords[alt_headword]:
                                         if alt_sense["word"] == sense["alt"] and get_pos_abbr(alt_sense["pos"]) == get_pos_abbr(sense["pos"]):
-                                            sense_copy = copy.deepcopy(sense)
+                                            sense_copy = deepcopy(sense)
                                             sense_copy["gloss"] = sense["gloss"].replace(match.group(1), match2.group(1) + " (" + alt_sense["gloss"] + ")")
+
+                                            if unidecode(headword).isalpha() and unidecode(alt_headword).isalpha():
+                                                sense_copy["alt inflections"] = []
+
+                                                for form in alt_sense["forms"]:
+                                                    form_unidecoded = unidecode(form).upper()
+
+                                                    i = 0
+                                                    while True:
+                                                        if i >= min(len(alt_headword), len(form_unidecoded)) or alt_headword[i] != form_unidecoded[i]:
+                                                            break
+
+                                                        i += 1
+
+                                                    if form_unidecoded.isalpha():
+                                                        sense_copy["alt inflections"].append(f"{alt_headword[i:]}/{form_unidecoded[i:]}")
 
                                             # keep countability/comparability consistent between parent and child
                                             if (alt_sense["pos"] == "noun" or alt_sense["pos"] == "name") and ("uncountable" in alt_sense["tags"] or "plural-normally" in alt_sense["tags"] or "plural-only" in alt_sense["tags"] or ("plural" in alt_sense["tags"] and len(alt_sense["forms"]) == 0)) and "countable" not in alt_sense["tags"] and "usually" not in alt_sense["tags"] and ("uncountable" not in sense_copy["tags"] or "countable" in sense_copy["tags"]):
@@ -553,7 +569,22 @@ for headword in headwords:
     # "unknown or uncertain plurals" (does not have forms listed but also does not have "uncountable" tag)
     # "plural not attested" (has the "no-plural" tag)
     # any entries that use {{head|en|noun}} or {{head|en|verb}} directly and thus don't list inflections
-    for sense in headwords[headword]:
+    # uncountable/uncomparable senses that are alt forms of countable/comparable senses
+    # verbs/adjectives/adverbs which have some, but not all, of their inflections
+    for sense in copy(headwords[headword]):
+        # for carrying over irregular inflections between alt forms
+        if "alt inflections" in sense and len(sense["alt inflections"]) != 0:
+            sense_copy = deepcopy(sense)
+
+            for alt_inflection_pattern in sense["alt inflections"]:
+                removal, addition = alt_inflection_pattern.split("/")
+
+                if len(headword) >= len(removal) and headword[len(headword)-len(removal):] == removal:
+                    sense_copy["forms"].append(headword[:len(headword)-len(removal)] + addition)
+
+            sense_copy["tags"].append("AUTOGEN")
+            headwords[headword].append(sense_copy)
+
         # please forgive me for this monstrosity
         if sense["pos"] in ["noun", "num"] and len(sense["forms"]) == 0 and ("countable" in sense["tags"] or (("uncountable" not in sense["tags"] and "singular-only" not in sense["tags"] and "form-of" not in sense["tags"] and "plural" not in sense["tags"]) or "no-plural" in sense["tags"]) and "plural" not in sense["gloss"]):
             if len(headword) >= 3 and headword[-3:] == "MAN" and headword not in ["BIRMAN", "BRACHMAN", "BRAMAN", "DISCMAN", "FLEHMAN", "HESSEMAN", "IMMELMAN", "KERMAN", "KUMAN", "KUNSTLEROMAN", "KURMAN", "LYERMAN", "OSMAN", "OTHMAN", "ROMAN", "YALMAN", "YELMAN", "ZAMAN"]:
@@ -575,7 +606,7 @@ for headword in headwords:
             else:
                 plural = headword + "S"
 
-            sense_copy = copy.deepcopy(sense)
+            sense_copy = deepcopy(sense)
             sense_copy["forms"].append(plural)
             sense_copy["tags"].append("AUTOGEN")
             headwords[headword].append(sense_copy)
@@ -618,7 +649,7 @@ for headword in headwords:
                 ing = headword + "ING"
                 ed = headword + "ED"
 
-            sense_copy = copy.deepcopy(sense)
+            sense_copy = deepcopy(sense)
             sense_copy["forms"].append(s)
             sense_copy["forms"].append(ing)
             sense_copy["forms"].append(ed)
@@ -648,7 +679,7 @@ for headword in headwords:
                 er = headword + "ER"
                 est = headword + "EST"
 
-            sense_copy = copy.deepcopy(sense)
+            sense_copy = deepcopy(sense)
             sense_copy["forms"].append(er)
             sense_copy["forms"].append(est)
             sense_copy["tags"].append("AUTOGEN")
